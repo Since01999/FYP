@@ -41,7 +41,14 @@
                     <tr>
                         <td>{{$item->id}}</td>
                         <td>{{$item->name}}</td>
-                        <td>{{$item->image}}</td>
+                        <td>
+                            @if ($item->image != '')
+                        <a href="{{ asset('storage/media/brand/' . $item->image) }}" target="_blank"><img width="100px" height="80px" src="{{ asset('storage/media/brand/' . $item->image) }}" /></a>
+                        
+                    @else
+                        <b>No image Uploaded</b>
+                @endif
+                    </td>
                       
                         <td>
                             <div class="table-data-feature">
@@ -64,7 +71,7 @@
                             </a>
                         
                             &nbsp;
-                               <a href="branf/delete/{{$item->id}}"> <button class="item" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
+                               <a href="brand/delete/{{$item->id}}"> <button class="item" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete">
                                     <i class="zmdi zmdi-delete"></i>
                                 </button>
                             </a>

@@ -29,6 +29,17 @@ class ProductController extends Controller
             $result['technical_specification'] = $arr->technical_specification;
             $result['uses'] = $arr->uses;
             $result['warranty'] = $arr->warranty;
+            //here advance feature related to the product management
+            $result['lead_time'] = $arr->lead_time;
+            $result['tax'] = $arr->tax;
+            $result['tax_type'] = $arr->tax_type;
+            $result['is_promo'] = $arr->is_promo;
+            $result['is_featured'] = $arr->is_featured;
+            $result['is_discounted'] = $arr->is_discounted;
+            $result['is_trending'] = $arr->is_trending;
+
+            //here the normal code related to product management
+
             $result['status'] = $arr->warranty;
             $result['id'] = $arr->id;
 
@@ -56,6 +67,13 @@ class ProductController extends Controller
             $result['technical_specification'] = '';
             $result['uses'] = '';
             $result['warranty'] = '';
+            $result['lead_time'] = ' ';
+            $result['tax'] = ' ';
+            $result['tax_type'] = ' ';
+            $result['is_promo'] = ' ';
+            $result['is_featured'] = ' ';
+            $result['is_discounted'] = ' ';
+            $result['is_trending'] = ' ';
             $result['status'] = '';
             $result['id'] = 0;
             $result['productAttrArr'][0]['id'] = '';
@@ -74,6 +92,7 @@ class ProductController extends Controller
         $result['category'] = DB::table('categories')->where(['status' => 1])->get();
         $result['sizes'] = DB::table('sizes')->where(['status' => 1])->get();
         $result['colors'] = DB::table('colors')->where(['status' => 1])->get();
+        $result['brands'] = DB::table('brands')->where(['status' => 1])->get();
 
         return view('admin/manage_product', $result);
     }
@@ -148,6 +167,17 @@ class ProductController extends Controller
         $model->technical_specification = $request->technical_specification;
         $model->uses = $request->uses;
         $model->warranty = $request->warranty;
+        //advance features related to the product management
+        $model->lead_time = $request->lead_time;
+        $model->tax = $request->tax;
+        $model->tax_type = $request->tax_type;
+        $model->is_promo = $request->is_promo;
+        $model->is_featured = $request->is_featured;
+        $model->is_discounted = $request->is_discounted;
+        $model->is_trending = $request->is_trending;
+
+        //heres the normal code for the product management
+
         $model->status = 1;
         $model->save();
         $pid = $model->id;
@@ -157,9 +187,9 @@ class ProductController extends Controller
             $productAttrArr['products_id'] = $pid;
             $productAttrArr['sku'] = $skuArr[$key];
 
-            $productAttrArr['mrp'] = $mrpArr[$key];
-            $productAttrArr['price'] = $priceArr[$key];
-            $productAttrArr['qty'] = $qtyArr[$key];
+            $productAttrArr['mrp'] =(int)$mrpArr[$key];
+            $productAttrArr['price'] =(int)$priceArr[$key];
+            $productAttrArr['qty'] = (int)$qtyArr[$key];
             if (isset($color_idArr[$key])) {
                 $productAttrArr['color_id'] = $color_idArr[$key];
             } else {
@@ -185,9 +215,6 @@ class ProductController extends Controller
             } else {
                 $productAttrArr['attr_image'] = ' ';
             }
-
-
-
             if ($attr_id[$key] != "") {
                 DB::table('products_attr')->where(['id' => $attr_id[$key]])->update($productAttrArr);
             } else {
@@ -208,15 +235,17 @@ class ProductController extends Controller
                 $image_name = $rand . '.' . $ext;
                 $request->file("images.$key")->storeAs('/public/media', $image_name);
                 $productImageArr['images'] = $image_name;
+
+                if ($pro_image_id[$key] != "") {
+                    DB::table('products_images')->where(['id' => $pro_image_id[$key]])->update($productImageArr);
+                } else {
+                    DB::table('products_images')->insert($productImageArr);
+                }
             } 
-            // else {
-            //     $productImageArr['images'] = ' ';
-            // }
-            if ($pro_image_id[$key] != "") {
-                DB::table('products_images')->where(['id' => $pro_image_id[$key]])->update($productImageArr);
-            } else {
-                DB::table('products_images')->insert($productImageArr);
+            else {
+                $productImageArr['images'] = ' ';
             }
+         
         }
         /* Product Images End */
         $request->session()->flash('message', $message);

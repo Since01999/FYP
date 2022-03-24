@@ -33,9 +33,14 @@ class BrandController extends Controller
     public function manageBrandProcess(Request $request)
     {
         //now validation of data
-        
+        if ($request->id > 0) {
+            $image_validate = "mimes:jpg,png,jpeg";
+        } else {
+            $image_validate = "required|mimes:jpg,png,jpeg";
+        }
         $request->validate([
-         'name' => 'required | unique:brands,name,'  //unique in size table.
+         'name' => 'required | unique:brands,name,'.$request->post('id'), //unique in size table.
+         'image' => $image_validate,
         ]);
     
         if ($request->id > 0) {
@@ -45,8 +50,19 @@ class BrandController extends Controller
             $model = new Brand(); 
             $message ="Brand Inserted";
         }
+
+        /*Uploading the Image Start*/
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $ext = $image->extension();
+            $image_name = time() . '.' . $ext;
+            $image->storeAs('/public/media/brand', $image_name);
+            $model->image = $image_name;
+        }
+
+        /*Uploading the Image End*/
+
         $model->name = $request->name;
-        $model->image = $request->image;
         $model->status = 1;
         $model->save();
         $request->session()->flash('message',$message);
