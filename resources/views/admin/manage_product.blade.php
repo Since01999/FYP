@@ -177,20 +177,15 @@
                 $pIArr = (array)$val;  
 
                 ?>
-
-  <input id="pro_image_id" name="pro_image_id[]" type="hidden" class="form-control" value="{{$pIArr['id']}}" >
-
+  <input id="pro_image_id" name="pro_image_id[]" type="hidden" class="form-control" value="{{$pIArr['id']}}" multiple>
                 <div class="card md10">
                     <div class="card-body">
                         <div class="form-group">
                             <div class="row md10" id="product_images_box">
-                              
-
                                 <div  class="col-md-4 product_images_{{$loop_count_num++}}">
                                     <label for="images" class="control-label mb-1">Images</label>
                                     <input id="images" name="images[]" type="file" class="form-control"
-                                        aria-required="true" aria-invalid="false" 
-                                        >
+                                        aria-required="true" aria-invalid="false" multiple >
                                     
                                     @if ($pIArr['images'] != '')
                                     <img width="50px" height="50px" src="{{ asset('storage/media/' . $pIArr['images']) }}" />
@@ -241,7 +236,7 @@
 
                 ?>
 
-  <input id="pro_attr_id" name="pro_attr_id[]" type="hidden" class="form-control" value="{{$pAArr['id']}}" >
+  <input id="pro_attr_id" name="pro_attr_id[]" type="hidden" class="form-control" value="{{$pAArr['id']}}"  multiple>
 
                 <div class="card md10" id="product_attr_{{$loop_count_num++}}">
                     <div class="card-body">
@@ -367,7 +362,7 @@
          loop_image_count =1;
          function add_image_more(){
             loop_image_count++;
-            var html ='<input id="pro_image_id" name="pro_image_id[]" type="hidden" class="form-control" value=""><div class="col-md-4 product_images_'+loop_image_count+'" ><label for="images" class="control-label mb-1">Image</label><input id="images" name="images[]" type="file" class="form-control" aria-required="true" aria-invalid="false" ></div>';
+            var html ='<input id="pro_image_id" name="pro_image_id[]" type="hidden" class="form-control" multiple><div class="col-md-4 product_images_'+loop_image_count+'" ><label for="images" class="control-label mb-1">Image</label><input id="images" name="images[]" type="file" class="form-control" aria-required="true" aria-invalid="false" multiple></div>';
             html +=' <div class="col-md-2 col-sm product_images_'+loop_image_count+'"><label for="" class="control-label mb-1">&nbsp;&nbsp;&nbsp;Action</label><button type="button" onclick=remove_image_more("'+loop_image_count+'") class="btn btn-danger"><i class="fa fa-minus"></i>&nbsp; Remove</button> </div>';
             jQuery('#product_images_box').append(html);
             

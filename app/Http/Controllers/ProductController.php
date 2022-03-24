@@ -83,11 +83,14 @@ class ProductController extends Controller
     public function manageProductProcess(Request $request)
     {
 
+        /*Testing code Starts */
 
-        //ifelse for validating the image 
-        //  echo "<pre>"; 
-        //     print_r($request->post());
-        //  die();
+        echo "<pre>";
+        print_r($request->post());
+        die();
+
+        /*Testing code Ends */
+        /* ifelse for validating the image */
         if ($request->id > 0) {
             $image_validate = "mimes:jpg,png,jpeg";
         } else {
@@ -196,7 +199,7 @@ class ProductController extends Controller
 
         /* Product Images Start */
         $pro_image_id = $request->post('pro_image_id');
-        foreach($pro_image_id as $key=>$val){
+        foreach ($pro_image_id as $key => $val) {
             $productImagesArr['products_id'] = $pid;
             if ($request->hasFile("images.$key")) {
                 $rand = rand('111111111', '9999999999');
@@ -213,7 +216,6 @@ class ProductController extends Controller
             } else {
                 DB::table('products_images')->insert($productImagesArr);
             }
-
         }
         /* Product Images End */
         $request->session()->flash('message', $message);
