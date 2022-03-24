@@ -85,9 +85,9 @@ class ProductController extends Controller
 
         /*Testing code Starts */
 
-        echo "<pre>";
-        print_r($request->post());
-        die();
+        // echo "<pre>";
+        // print_r($request->post());
+        // die();
 
         /*Testing code Ends */
         /* ifelse for validating the image */
@@ -200,21 +200,22 @@ class ProductController extends Controller
         /* Product Images Start */
         $pro_image_id = $request->post('pro_image_id');
         foreach ($pro_image_id as $key => $val) {
-            $productImagesArr['products_id'] = $pid;
+            $productImageArr['products_id'] = $pid;
             if ($request->hasFile("images.$key")) {
                 $rand = rand('111111111', '9999999999');
                 $images = $request->file("images.$key");
                 $ext = $images->extension();
                 $image_name = $rand . '.' . $ext;
-                $images->storeAs('/public/media', $image_name);
-                $productImagesArr['images'] = $image_name;
+                $request->file("images.$key")->storeAs('/public/media', $image_name);
+                $productImageArr['images'] = $image_name;
+            } 
+            // else {
+            //     $productImageArr['images'] = ' ';
+            // }
+            if ($pro_image_id[$key] != "") {
+                DB::table('products_images')->where(['id' => $pro_image_id[$key]])->update($productImageArr);
             } else {
-                $productImagesArr['images'] = ' ';
-            }
-            if ($pro_image_id != "") {
-                DB::table('products_images')->where(['id' => $pro_image_id[$key]])->update($productImagesArr);
-            } else {
-                DB::table('products_images')->insert($productImagesArr);
+                DB::table('products_images')->insert($productImageArr);
             }
         }
         /* Product Images End */

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\CouponController;
@@ -97,6 +98,15 @@ Route::get('admin/product_attr_delete/{pro_attr_id}/{pro_id}',[ProductController
 //for deleting the product image (multiple)
 Route::get('admin/product_images_delete/{pro_image_id}/{pro_id}',[ProductController::class,'product_images_delete'])->name('product.product_images_delete');
 
+//brand Routes 
+
+Route::get('admin/brand',[BrandController::class,'index'])->name('brand.index');
+Route::get('admin/brand/manage_brand',[BrandController::class,'manageBrand'])->name('brand.manage_color');
+//here we are editing the color using the same function
+Route::get('admin/brand/manage_brand/{id}',[BrandController::class,'manageBrand'])->name('brand.manage_brand');
+Route::Post('admin/brand/manage_brand_process',[BrandController::class,'manageBrandProcess'])->name('brand.manage_brand_process');
+Route::get('admin/brand/delete/{id}',[BrandController::class,'deleteBrand'])->name('brand.delete');
+Route::get('admin/brand/status/{status}/{id}',[BrandController::class,'statusBrand'])->name('brand.status');
 
 
 });

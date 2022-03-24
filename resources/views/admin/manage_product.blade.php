@@ -168,7 +168,12 @@
             {{-- product Images started  --}}
             <h2 class="md10">Product Images</h2>
             <div id=""> 
-                <?php  $loop_count_num = 1;
+             <div class="card md10">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <div class="row md10" id="product_images_box">
+
+   <?php  $loop_count_num = 1;
                   ?>
                 @foreach($productImagesArr as $key=>$val)
                 {{-- now here we will use type casting in order to convert object into array --}}
@@ -178,17 +183,16 @@
 
                 ?>
   <input id="pro_image_id" name="pro_image_id[]" type="hidden" class="form-control" value="{{$pIArr['id']}}" multiple>
-                <div class="card md10">
-                    <div class="card-body">
-                        <div class="form-group">
-                            <div class="row md10" id="product_images_box">
+                
+
+
                                 <div  class="col-md-4 product_images_{{$loop_count_num++}}">
                                     <label for="images" class="control-label mb-1">Images</label>
                                     <input id="images" name="images[]" type="file" class="form-control"
                                         aria-required="true" aria-invalid="false" multiple >
                                     
                                     @if ($pIArr['images'] != '')
-                                    <img width="50px" height="50px" src="{{ asset('storage/media/' . $pIArr['images']) }}" />
+                                 <a href="{{ asset('storage/media/' . $pIArr['images']) }}" target="_blank"><img width="50px" height="50px" src="{{ asset('storage/media/' . $pIArr['images']) }}" /></a>
                                         @endif
                                 </div>
                                 <div class="col-md-2 col-sm">
@@ -204,12 +208,13 @@
                                         @endif
 
                                 </div>
+                                @endforeach
                             </div>
                         </div>
 
                     </div>
                 </div>
-                @endforeach
+             
             </div>
 {{-- product Images End  --}}
 
