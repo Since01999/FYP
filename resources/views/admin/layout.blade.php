@@ -76,6 +76,11 @@
                                 <a href="{{url('admin/product')}}">
                                     <i class="fa-brands fa-product-hunt"></i>Products</a>
                             </li>
+                            
+                        <li class="@yield('tax_selected')">
+                            <a href="{{url('admin/tax')}}">
+                                <i class="fa fa-calculator"></i>Taxes</a>
+                        </li>   
 
                             
                     </ul>
@@ -124,6 +129,10 @@
                         <li class="@yield('product_selected')">
                             <a href="{{url('admin/product')}}">
                                 <i class="fa-brands fa-product-hunt"></i>Products</a>
+                        </li>   
+                        <li class="@yield('tax_selected')">
+                            <a href="{{url('admin/tax')}}">
+                                <i class="fa fa-calculator"></i>Taxes</a>
                         </li>   
                   
                         {{-- <li>

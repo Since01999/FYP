@@ -94,6 +94,11 @@
                                     {{ $message }}
                                 </div>
                             @enderror
+                            @if ($image != '')
+                            <a href="{{ asset('storage/media/' . $image) }}"
+                                target="_blank"><img width="50px" height="50px"
+                                    src="{{ asset('storage/media/' . $image) }}" /></a>
+                        @endif
                         </div>
                         <div class="form-group">
                             <div class="row">
@@ -176,22 +181,27 @@
 
                         <div class="form-group">
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-8">
                                     <label for="model" class="control-label mb-1">Lead Time</label>
                                     <input id="lead_time" name="lead_time" type="text" class="form-control"
                                         aria-required="true" aria-invalid="false" value="{{ $lead_time }}">
 
                                 </div>
                                 <div class="col-md-4">
-                                    <label for="model" class="control-label mb-1">Tax</label>
-                                    <input id="tax" name="tax" type="text" class="form-control" aria-required="true"
-                                        aria-invalid="false" value="{{ $tax }}">
+                                    <label for="taxes" class="control-label mb-1">Tax</label>
 
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="model" class="control-label mb-1">Tax Type</label>
-                                    <input id="tax_type" name="tax_type" type="text" class="form-control"
-                                        aria-required="true" aria-invalid="false" value="{{ $tax_type }}">
+                                    <select id="tax_id" name="tax_id" type="text" class="form-control" aria-required="true"
+                                        aria-invalid="false" required>
+                                        <option value="" selected>Select Tax</option>
+                                        @foreach ($taxes as $list)
+                                            @if ($tax_id == $list->id)
+                                                <option selected value="{{ $list->id }}">
+                                                @else
+                                                <option value="{{ $list->id }}">
+                                            @endif
+                                            {{ $list->tax_desc }}</option>
+                                        @endforeach
+                                    </select>
 
                                 </div>
                             </div>
@@ -315,16 +325,6 @@
                         </div>
                         {{-- product Images End --}}
 
-
-
-
-
-
-
-
-
-
-
                         {{-- product Attributes started --}}
                         <h2 class="md10">Product Attributes</h2>
                         <div id="product_attr_box">
@@ -407,8 +407,8 @@
                                                     <input id="attr_image" name="attr_image[]" type="file"
                                                         class="form-control" aria-required="true" aria-invalid="false">
                                                     @if ($pAArr['attr_image'] != '')
-                                                        <img width="50px" height="50px"
-                                                            src="{{ asset('storage/media/' . $pAArr['attr_image']) }}" />
+                                                     <a href="{{ asset('/storage/media/'.$pAArr['attr_image']) }}" target="_Blank">   <img width="50px" height="50px"
+                                                            src="{{ asset('/storage/media/'.$pAArr['attr_image']) }}" /></a>
                                                     @endif
                                                 </div>
                                                 <div class="col-md-2 col-sm">

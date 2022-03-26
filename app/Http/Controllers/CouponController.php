@@ -19,12 +19,18 @@ class CouponController extends Controller
             $result['title'] = $arr->title;
             $result['code'] = $arr->code;
             $result['value'] = $arr->value;
+            $result['type'] = $arr->type;
+            $result['min_order_amt'] = $arr->min_order_amt;
+            $result['is_one_time'] = $arr->is_one_time;
             $result['id'] = $arr->id;
         } else {
             //if we dont get the data then we will make two variable
             $result['title'] = '';
             $result['code'] = '';
             $result['value'] = '';
+            $result['type'] = '';
+            $result['min_order_amt'] = '';
+            $result['is_one_time'] = '';
             $result['id'] = 0;
         }
         return view('admin/manage_coupon', $result);
@@ -48,10 +54,14 @@ class CouponController extends Controller
         } else {
             $model = new Coupon();
             $message ="Coupon Inserted";
+            $model->status = 1;
         }
         $model->title = $request->title;
         $model->code = $request->code;
         $model->value= $request->value;
+        $model->type= $request->type;
+        $model->min_order_amt= $request->min_order_amt;
+        $model->is_one_time= $request->is_one_time;
         $model->save();
         $request->session()->flash('message',$message);
         return redirect('admin/coupon');

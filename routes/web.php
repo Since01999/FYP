@@ -7,6 +7,7 @@ use App\Http\Controllers\ColorController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SizeController;
+use App\Http\Controllers\TaxController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -107,6 +108,18 @@ Route::get('admin/brand/manage_brand/{id}',[BrandController::class,'manageBrand'
 Route::Post('admin/brand/manage_brand_process',[BrandController::class,'manageBrandProcess'])->name('brand.manage_brand_process');
 Route::get('admin/brand/delete/{id}',[BrandController::class,'deleteBrand'])->name('brand.delete');
 Route::get('admin/brand/status/{status}/{id}',[BrandController::class,'statusBrand'])->name('brand.status');
+
+
+//Tax Routes
+
+
+Route::get('admin/tax',[TaxController::class,'index'])->name('tax.index');
+Route::get('admin/tax/manage_tax',[TaxController::class,'manageTax'])->name('tax.manage_tax');
+//here we are editing the color using the same function
+Route::get('admin/tax/manage_tax/{id}',[TaxController::class,'manageTax'])->name('tax.manage_tax');
+Route::Post('admin/tax/manage_tax_process',[TaxController::class,'manageTaxProcess'])->name('tax.manage_tax_process');
+Route::get('admin/tax/delete/{id}',[TaxController::class,'deleteTax'])->name('tax.delete');
+Route::get('admin/tax/status/{status}/{id}',[TaxController::class,'statusTax'])->name('tax.status');
 
 
 });
