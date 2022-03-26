@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
+use App\Http\Controllers\Controller;
 
-use App\Models\Size;
+use App\Models\Admin\Size;
 use Illuminate\Http\Request;
 
 class SizeController extends Controller

@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
 
-use App\Models\Brand;
+namespace App\Http\Controllers\Admin;
+use App\Http\Controllers\Controller;
+use App\Models\Admin\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -20,11 +21,18 @@ class BrandController extends Controller
             $arr = Brand::FindOrFail($id);
             $result['name'] = $arr->name;
             $result['image'] = $arr->image;
+            $result['is_home'] = $arr->is_home;
+            $result['is_home_selected'] = '';
+            if($arr->is_home == 1){
+                $result['is_home_selected'] = "checked";
+            }
             $result['id'] = $arr->id;
         } else {
             //if we dont get the data then we will make two variable
             $result['name'] = '';
             $result['image'] = '';
+            $result['is_home_selected'] = '';
+            $result['is_home'] = ' ';
             $result['id'] = 0;
         }
         return view('admin/manage_brand', $result);
@@ -72,6 +80,10 @@ class BrandController extends Controller
 
         $model->name = $request->name;
         $model->status = 1;
+        $model->is_home = 0;
+        if( $request->is_home !==null){
+            $model->is_home = 1;
+        }
         $model->save();
         $request->session()->flash('message',$message);
         return redirect('admin/brand');

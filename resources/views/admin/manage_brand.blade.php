@@ -3,12 +3,6 @@
 @section('brand_selected','active')
 @section('container')
 
- {{-- for image required on update or delete  --}}
-@if ($id > 0)
-{{ $image_required = '' }}
-@else
-<?php $image_required = 'required'; ?>
-@endif
 
 {{-- for showing error related to Undefined image extensin --}}
 
@@ -49,7 +43,7 @@
                         <div class="form-group">
                             <label for="image" class="control-label mb-1">Brand Image</label>
                             <input id="image" name="image" type="file" class="form-control" aria-required="true"
-                                aria-invalid="false" value="{{ $image }}" {{ $image_required }}>
+                                aria-invalid="false" value="{{$image}}">
 
                             @error('image')
                                 <br>
@@ -58,10 +52,18 @@
                                     {{ $message }}
                                 </div>
                             @enderror
-
-
-                            <a href="{{ asset('storage/media/brand/' . $image) }}" target="_blank"><img width="100px" height="80px" src="{{ asset('storage/media/brand/' . $image) }}" /></a>
+                            @if ($image != '')
+                            <a href="{{ asset('storage/media/brand/'. $image) }}" target="_blank"><img width="100px" height="80px" src="{{ asset('storage/media/brand/' . $image) }}" /></a>
+                        @endif
                         </div>
+                         <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="category_image" class="control-label mb-1">Show in Home Page</label>
+                                    <input id="is_home" name="is_home" type="checkbox" aria-required="true"
+                                        aria-invalid="false"  {{$is_home_selected}}>
+                                    
+                                </div>
+                            </div>
 
                         <div>
                             <button id="payment-button" type="submit" class="btn btn-lg btn-info btn-block">

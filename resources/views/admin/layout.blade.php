@@ -81,6 +81,11 @@
                             <a href="{{url('admin/tax')}}">
                                 <i class="fa fa-calculator"></i>Taxes</a>
                         </li>   
+                        
+                        <li class="@yield('customer_selected')">
+                            <a href="{{url('admin/customer')}}">
+                                <i class="fa fa-user"></i>Customers</a>
+                        </li>   
 
                             
                     </ul>
@@ -133,6 +138,10 @@
                         <li class="@yield('tax_selected')">
                             <a href="{{url('admin/tax')}}">
                                 <i class="fa fa-calculator"></i>Taxes</a>
+                        </li>   
+                        <li class="@yield('customer_selected')">
+                            <a href="{{url('admin/customer')}}">
+                                <i class="fa fa-user"></i>Customers</a>
                         </li>   
                   
                         {{-- <li>

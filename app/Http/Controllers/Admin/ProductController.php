@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
+use App\Http\Controllers\Controller;
 
 use Illuminate\Support\Facades\Storage;
 
-use App\Models\Product;
+use App\Models\Admin\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -190,9 +191,10 @@ class ProductController extends Controller
 
         /*Product Attr Start*/
         foreach ($skuArr as $key => $val) {
+
+            $productAttrArr = [];
             $productAttrArr['products_id'] = $pid;
             $productAttrArr['sku'] = $skuArr[$key];
-
             $productAttrArr['mrp'] = (int)$mrpArr[$key];
             $productAttrArr['price'] = (int)$priceArr[$key];
             $productAttrArr['qty'] = (int)$qtyArr[$key];
