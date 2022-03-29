@@ -42,6 +42,7 @@ class CategoryController extends Controller
             $result['parent_category_id'] = '';
             $result['category_image'] = '';
             $result['is_home'] = ' ';
+            $result['is_home_selected'] = '';
             $result['id'] = 0;
             $result['category'] = DB::table('categories')->where(['status' => 1])->get();
             return view('admin/manage_category', $result);

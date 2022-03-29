@@ -21,6 +21,7 @@ class AdminController extends Controller
         } else {
             return view('admin.login');
         }
+        return view('admin.login');
     }
 
     public function auth(Request $request)

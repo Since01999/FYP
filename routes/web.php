@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SizeController;
 use App\Http\Controllers\Admin\TaxController;
+use App\Http\Controllers\Front\FrontController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,10 +23,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+//loading the main view of the store 
+Route::get('/',[FrontController::class,'index'])->name('index');
 
+//loading the admin routes 
 Route::get('admin',[AdminController::class,'index'])->name('admin.index');
 Route::post('admin/auth',[AdminController::class,'auth'])->name('admin.auth');
 
