@@ -4181,6 +4181,19 @@ img {
   }
   #aa-header .aa-header-top .aa-header-top-right .aa-head-top-nav-right li a {   
     padding: 5px 2px;
-  }
+  } 
+}
+.lead_time{
+  color: red;
+  margin-top: -3px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.aa-color-red{
+  background-color: red;
+}
+.mt10{
+  margin-top: 10px;
 }
 

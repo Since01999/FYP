@@ -1,5 +1,5 @@
 @extends('front/layout')
-
+@section('page_title','Home Page')
 @section('container')
     <!-- Start slider -->
     <section id="aa-slider">
@@ -44,7 +44,6 @@
                     <div class="aa-promo-area">
                         <div class="row">
                             <!-- promo left -->
-
                             @foreach ($home_category as $item)
                                 <div class="col-md-4 no-padding">
                                     <div class="aa-promo-left">

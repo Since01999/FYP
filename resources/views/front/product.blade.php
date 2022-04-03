@@ -1,5 +1,5 @@
 @extends('front/layout')
-
+@section('page_title',$product[0]->name)
 @section('container')
   
   <!-- catg header banner section -->
@@ -37,11 +37,19 @@
                              class="simpleLens-big-image"></a></div>
                        </div>
                        <div class="simpleLens-thumbnails-container">
-                           <a data-big-image="{{ asset('storage/media/'.$product[0]->image)}}" data-lens-image="{{ asset('storage/media/'.$product[0]->image)}}" class="simpleLens-thumbnail-wrapper" href="#">
-                             <img src="{{ asset('storage/media/'.$product[0]->image)}}" width="50px">
-                           </a>                                    
-                          
+                                                           
+                           @if(isset($product_images[$product[0]->id][0]))
+                             @foreach($product_images[$product[0]->id] as $list)
+
+                              <a data-big-image="{{ asset('storage/media/'.$list->images)}}" data-lens-image="{{ asset('storage/media/'.$list->images)}}" class="simpleLens-thumbnail-wrapper" href="#">
+                                <img src="{{ asset('storage/media/'.$list->images)}}" width="50px" height="50px">
+                              </a> 
+
+                             
+                             @endforeach
+                             @endif
                        </div>
+
                      </div>
                    </div>
                  </div>
@@ -50,44 +58,59 @@
                    <div class="aa-product-view-content">
                      <h3>{{$product[0]->name}}</h3>
                      <div class="aa-price-block">
-                       <span class="aa-product-view-price">Rs. {{$product_attr[$product[0]->id][0]->price}}/-</span>
+                       <span class="aa-product-view-price">Rs. {{$product_attr[$product[0]->id][0]->mrp}}/-</span>
+                       <span class="aa-product-view-price">&nbsp;&nbsp; &nbsp;<del>Rs. {{$product_attr[$product[0]->id][0]->price}}/-</del></span>
                        <p class="aa-product-avilability">Avilability: <span>In stock</span></p>
+                       
+                       @if($product[0]->lead_time != "")
+                       <p class="lead_time">Lead Time: <span>{{$product[0]->lead_time}}</span></p>
+                       @endif
                      </div>
                      <p>{!! $product[0]->short_desc !!}</p>
                      <h4>Size</h4>
+                    
                      <div class="aa-prod-view-size">
-                       <a href="#">S</a>
-                       <a href="#">M</a>
-                       <a href="#">L</a>
-                       <a href="#">XL</a>
-                     </div>
+                      <?php
+                      //here we are getting unique data from the sizes
+                      $arrSize = []; 
+                      foreach($product_attr[$product[0]->id] as $attr){
+                        $arrSize[]= $attr->size;
+                      }
+                      $arrSize = array_unique($arrSize);
+                      ?>
+                      @foreach($arrSize as $attr)
+                      @if($attr != "")
+                       <a  href="javascript:void(0)" onclick="showColor('{{$attr}}')" class="size_link" id="size_{{$attr}}">{{$attr}}</a>
+                       @endif       
+                       @endforeach
+                      </div>
                      <h4>Color</h4>
                      <div class="aa-color-tag">
-                       <a href="#" class="aa-color-green"></a>
-                       <a href="#" class="aa-color-yellow"></a>
-                       <a href="#" class="aa-color-pink"></a>                      
-                       <a href="#" class="aa-color-black"></a>
-                       <a href="#" class="aa-color-white"></a>                      
+                      @foreach($product_attr[$product[0]->id] as $attr)
+                      
+                      @if($attr->color!= "")
+                       <a href="javascript:void(0)" 
+                       class="aa-color-{{strtolower($attr->color)}} product_color size_{{$attr->size}}"  
+                       onclick=change_product_color_image("{{asset('storage/media/'. $attr->attr_image)}}","{{$attr->color}}")></a>           
+                               {{--  Making fucntion in public js file --}}
+                       @endif       
+                       @endforeach
                      </div>
                      <div class="aa-prod-quantity">
                        <form action="">
-                         <select id="" name="">
-                           <option selected="1" value="0">1</option>
-                           <option value="1">2</option>
-                           <option value="2">3</option>
-                           <option value="3">4</option>
-                           <option value="4">5</option>
-                           <option value="5">6</option>
+                         <select id="qty" name="qty">
+                          @for($i = 1 ; $i < 11 ; $i++)
+                           <option value="{{$i}}">{{$i}}</option>
+                          @endfor
                          </select>
                        </form>
                        <p class="aa-prod-category">
-                         Category: <a href="#">Polo T-Shirt</a>
+                         Model: <a href="#">{{$product[0]->model}}</a>
                        </p>
                      </div>
                      <div class="aa-prod-view-bottom">
-                       <a class="aa-add-to-cart-btn" href="#">Add To Cart</a>
-                       <a class="aa-add-to-cart-btn" href="#">Wishlist</a>
-                       <a class="aa-add-to-cart-btn" href="#">Compare</a>
+                       <a class="aa-add-to-cart-btn"  href="javascript:void(0)" onclick = "add_to_cart({{$product[0]->id}})">Add To Cart</a>
+                      <div id="add_to_cart_msg"></div>
                      </div>
                    </div>
                  </div>
@@ -96,47 +119,32 @@
              <div class="aa-product-details-bottom">
                <ul class="nav nav-tabs" id="myTab2">
                  <li><a href="#description" data-toggle="tab">Description</a></li>
+                 <li><a href="#technical_specification" data-toggle="tab">Technical Specifications</a></li>
+                 <li><a href="#uses" data-toggle="tab">Uses</a></li>
+                 <li><a href="#warranty" data-toggle="tab">Warrenty</a></li>
                  <li><a href="#review" data-toggle="tab">Reviews</a></li>                
                </ul>
  
                <!-- Tab panes -->
                <div class="tab-content">
-                 <div class="tab-pane fade in active" id="description">
-                   <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-                   <ul>
-                     <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quod, culpa!</li>
-                     <li>Lorem ipsum dolor sit amet.</li>
-                     <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</li>
-                     <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolor qui eius esse!</li>
-                     <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quibusdam, modi!</li>
-                   </ul>
-                   <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum, iusto earum voluptates autem esse molestiae ipsam, atque quam amet similique ducimus aliquid voluptate perferendis, distinctio!</p>
-                   <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis ea, voluptas! Aliquam facere quas cumque rerum dolore impedit, dicta ducimus repellat dignissimos, fugiat, minima quaerat necessitatibus? Optio adipisci ab, obcaecati, porro unde accusantium facilis repudiandae.</p>
+                <div class="tab-pane fade" id="description">
+                  {!!$product[0]->desc!!}
+                 </div>
+                 <div class="tab-pane fade in active" id="technical_specification">
+                  {!!$product[0]->technical_specification!!}
+                 </div>
+                 <div class="tab-pane fade" id="uses">
+                  {!!$product[0]->uses!!}
+                 </div>
+                 
+                 <div class="tab-pane fade" id="warranty">
+                  {!!$product[0]->warranty!!}
                  </div>
                  <div class="tab-pane fade " id="review">
                   <div class="aa-product-review-area">
                     <h4>2 Reviews for T-Shirt</h4> 
                     <ul class="aa-review-nav">
-                      <li>
-                         <div class="media">
-                           <div class="media-left">
-                             <a href="#">
-                               <img class="media-object" src="img/testimonial-img-3.jpg" alt="girl image">
-                             </a>
-                           </div>
-                           <div class="media-body">
-                             <h4 class="media-heading"><strong>Marla Jobs</strong> - <span>March 26, 2016</span></h4>
-                             <div class="aa-product-rating">
-                               <span class="fa fa-star"></span>
-                               <span class="fa fa-star"></span>
-                               <span class="fa fa-star"></span>
-                               <span class="fa fa-star"></span>
-                               <span class="fa fa-star-o"></span>
-                             </div>
-                             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-                           </div>
-                         </div>
-                       </li>
+
                        <li>
                          <div class="media">
                            <div class="media-left">
@@ -192,24 +200,32 @@
              <div class="aa-product-related-item">
                <h3>Related Products</h3>
                <ul class="aa-product-catg aa-related-item-slider">
-                 <!-- start single product item -->
+                
+                 @if (isset($related_product[0])) 
+                 @foreach ($related_product as $productArr)
                  <li>
-                   <figure>
-                     <a class="aa-product-img" href="#"><img src="img/man/polo-shirt-2.png" alt="polo shirt img"></a>
-                     <a class="aa-add-card-btn"href="#"><span class="fa fa-shopping-cart"></span>Add To Cart</a>
-                      <figcaption>
-                       <h4 class="aa-product-title"><a href="#">Polo T-Shirt</a></h4>
-                       <span class="aa-product-price">$45.50</span><span class="aa-product-price"><del>$65.50</del></span>
-                     </figcaption>
-                   </figure>                     
-                   <div class="aa-product-hvr-content">
-                     <a href="#" data-toggle="tooltip" data-placement="top" title="Add to Wishlist"><span class="fa fa-heart-o"></span></a>
-                     <a href="#" data-toggle="tooltip" data-placement="top" title="Compare"><span class="fa fa-exchange"></span></a>
-                     <a href="#" data-toggle2="tooltip" data-placement="top" title="Quick View" data-toggle="modal" data-target="#quick-view-modal"><span class="fa fa-search"></span></a>                            
-                   </div>
-                   <!-- product badge -->
-                   <span class="aa-badge aa-sale" href="#">SALE!</span>
+                     <figure>
+                         <a class="aa-product-img" href="{{url('product/'.$productArr->slug)}}"><img
+                                 src="{{ asset('storage/media/'.$productArr->image)}}" height="300px" width="300px"
+                                 alt="{{$productArr->name}}"></a>
+                         <a class="aa-add-card-btn" href="{{url('product/'.$productArr->slug)}}"><span
+                                 class="fa fa-shopping-cart"></span>Add To Cart</a>
+                         <figcaption>
+                             <h4 class="aa-product-title"><a href="{{url('product/'.$productArr->slug)}}">{{$productArr->name}}</a></h4>
+                             <span class="aa-product-price">Rs {{$related_product_attr[$productArr->id][0]->price}}</span><span
+                                 class="aa-product-price"><del>Rs {{$related_product_attr[$productArr->id][0]->mrp}}</del></span>
+                         </figcaption>
+                     </figure>
+                     <!-- product badge -->
                  </li>
+                 @endforeach
+                 @else 
+                   <li>
+                     <figure>
+                         no data found
+                       </figure>
+                     </li>
+                     @endif
                     </ul>
                <!-- quick view modal -->                  
 
@@ -224,5 +240,14 @@
        </div>
      </div>
    </section>
-   <!-- / product category -->
+   {{-- making input tags for sending data to the Add to cart page
+    ..it includes data  related to home page --}}
+    <form action="" id="frmAddToCart">
+<input type="hidden" id="size_id" name="size_id">
+<input type="hidden" id="color_id" name="color_id">
+<input type="hidden" id="pqty" name="pqty">
+<input type="hidden" id="product_id" name="product_id">
+@csrf
+</form>
+       <!-- / product category -->
 @endsection

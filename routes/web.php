@@ -28,7 +28,8 @@ use Illuminate\Support\Facades\Route;
 // *************FrontEnd Views **************
 Route::get('/',[FrontController::class,'index'])->name('index');
 Route::get('product/{id}',[FrontController::class,'product'])->name('front.product');
-
+//add to cart route 
+Route::post('add_to_cart',[FrontController::class,'add_to_cart'])->name('front.add_to_cart');
 
 //loading the admin routes 
 Route::get('admin',[AdminController::class,'index'])->name('admin.index');

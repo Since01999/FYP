@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redis;
 
 class FrontController extends Controller
 {
@@ -110,7 +111,43 @@ class FrontController extends Controller
         ->where('products_attr.products_id', '=', $list1->id)
         ->get();
     }
+    /******* Multiple Products Images Section ********/
+    foreach ($result['product'] as $list1) {
+      $result['product_images'][$list1->id] =
+        DB::table('products_images')
+        ->where('products_images.products_id', '=', $list1->id)
+        ->get();
+    }
+      /*******Related Products Section ********/
+    $result['related_product']= DB::table('products')
+      ->where(['status' => 1])
+      ->where('slug','!=', $slug)
+      ->where(['category_id' => $result['product'][0]->category_id])
+      ->skip(0)->take(4)
+      ->get();
+    //loop for categories id and related categories products 
+    foreach ($result['related_product'] as $list1) {
+      $result['related_product_attr'][$list1->id] =
+        DB::table('products_attr')
+        ->leftJoin('sizes', 'sizes.id', '=', 'products_attr.size_id')
+        ->leftJoin('colors', 'colors.id', '=', 'products_attr.color_id')
+        ->where('products_attr.products_id', '=', $list1->id)
+        ->get();
+    }
+    
     return view('front.product', $result);
     
   }
+  public function add_to_cart(Request $request){
+    if($request->session()->has('FRONT_USER_LOGIN')){
+      $uid = $request->session()->get('FRONT_USER_LOGIN');
+      $user_type = 'Reg';
+    }else{
+      $uid = getUserTempId();
+      $user_type = "Not-Reg";
+      }
+echo $uid;
+echo $user_type;
+    }
 }
+
