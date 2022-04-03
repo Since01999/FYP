@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SizeController;
 use App\Http\Controllers\Admin\TaxController;
 use App\Http\Controllers\Front\FrontController;
+use App\Http\Controllers\Admin\HomeBannerController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,7 +25,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 //loading the main view of the store 
+// *************FrontEnd Views **************
 Route::get('/',[FrontController::class,'index'])->name('index');
+Route::get('product/{id}',[FrontController::class,'product'])->name('front.product');
+
 
 //loading the admin routes 
 Route::get('admin',[AdminController::class,'index'])->name('admin.index');
@@ -130,6 +134,17 @@ Route::get('admin/tax/status/{status}/{id}',[TaxController::class,'statusTax'])-
 Route::get('admin/customer',[CustomerController::class,'index'])->name('customer.index');
 Route::get('admin/customer/show/{id}',[CustomerController::class,'show'])->name('customer.show');
 Route::get('admin/customer/status/{status}/{id}',[CustomerController::class,'statusCustomer'])->name('customer.status');
+
+//home Banner Routes
+
+
+Route::get('admin/homebanner',[HomeBannerController::class,'index'])->name('homebanner.index');
+Route::get('admin/homebanner/manage_homebanner',[HomeBannerController::class,'manageHomeBanner'])->name('homebanner.manage_homebanner');
+//here we are editing the color using the same function
+Route::get('admin/homebanner/manage_homebanner/{id}',[HomeBannerController::class,'manageHomeBanner'])->name('homebanner.manage_homebanner');
+Route::Post('admin/homebanner/manage_homebanner_process',[HomeBannerController::class,'manageHomeBannerProcess'])->name('homebanner.manage_homebanner_process');
+Route::get('admin/homebanner/delete/{id}',[HomeBannerController::class,'deleteHomeBanner'])->name('homebanner.delete');
+Route::get('admin/homebanner/status/{status}/{id}',[HomeBannerController::class,'statusHomeBanner'])->name('homebanner.status');
 
 
 });

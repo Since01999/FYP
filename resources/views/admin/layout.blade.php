@@ -86,6 +86,10 @@
                             <a href="{{url('admin/customer')}}">
                                 <i class="fa fa-user"></i>Customers</a>
                         </li>   
+                        <li class="@yield('home_banner_selected')">
+                            <a href="{{url('admin/homeBanner')}}">
+                                <i class="fas fa-images"></i>Home Banner</a>
+                        </li>   
 
                             
                     </ul>
@@ -142,6 +146,10 @@
                         <li class="@yield('customer_selected')">
                             <a href="{{url('admin/customer')}}">
                                 <i class="fa fa-user"></i>Customers</a>
+                        </li>   
+                        <li class="@yield('home_banner_selected')">
+                            <a href="{{url('admin/homebanner')}}">
+                                <i class="fas fa-images"></i>Home Banner</a>
                         </li>   
                   
                         {{-- <li>
