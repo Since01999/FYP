@@ -38,6 +38,12 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+
+
+    {{-- this script is for getting the path where we stored oue images in that specific folder --}}
+    <script>
+      var  PRODUCT_IMAGE =  "{{asset('storage/media/')}}";
+  </script>
   
 
   </head>
@@ -104,7 +110,7 @@
                 <ul class="aa-head-top-nav-right">
                   <li><a href="javascript:void(0)">My Account</a></li>
                   <li class="hidden-xs"><a href="javascript:void(0)">Wishlist</a></li>
-                  <li class="hidden-xs"><a href="javascript:void(0)">My Cart</a></li>
+                  <li class="hidden-xs"><a href="{{url('/cart')}}">My Cart</a></li>
                   <li class="hidden-xs"><a href="javascript:void(0)">Checkout</a></li>
                   <li><a href="" data-toggle="modal" data-target="#login-modal">Login</a></li>
                 </ul>
@@ -134,41 +140,52 @@
               </div>
               <!-- / logo  -->
                <!-- cart box -->
+
+               <?php 
+              $getAddToCartTotalItem =getAddToCartTotalItem();
+              $totalCartItem = count($getAddToCartTotalItem);
+              $totalPrice = 0;
+
+              ?>
               <div class="aa-cartbox">
-                <a class="aa-cart-link" href="#">
+                <a class="aa-cart-link" href="#" id="cartBox">
                   <span class="fa fa-shopping-basket"></span>
                   <span class="aa-cart-title">SHOPPING CART</span>
-                  <span class="aa-cart-notify">2</span>
+                  {{-- Making this data dynamic in the helper function --}}
+                  <span class="aa-cart-notify">{{$totalCartItem}}</span>
                 </a>
                 <div class="aa-cartbox-summary">
+                @if($totalCartItem > 0)
+                
                   <ul>
+                    @foreach($getAddToCartTotalItem as $cartItem)
+                    <?php  $totalPrice = $totalPrice+($cartItem->qty * $cartItem->price)  ?>
                     <li>
-                      <a class="aa-cartbox-img" href="#"><img src="{{asset('front_assets/img/woman-small-2.jpg')}}" alt="img"></a>
+                      <a class="aa-cartbox-img" href="#"><img
+                        src="{{ asset('storage/media/' . $cartItem->image) }}"
+                        height="300px" width="300px"
+                        alt="{{ $cartItem->name }}"></a>
                       <div class="aa-cartbox-info">
-                        <h4><a href="#">Product Name</a></h4>
-                        <p>1 x $250</p>
+                        <h4><a href="#">{{$cartItem->name}}</a></h4>
+                        <p>{{$cartItem->qty}} *  Rs {{$cartItem->price}}</p>
                       </div>
                       <a class="aa-remove-product" href="#"><span class="fa fa-times"></span></a>
                     </li>
-                    <li>
-                      <a class="aa-cartbox-img" href="#"><img src="{{asset('front_assets/img/woman-small-1.jpg')}}" alt="img"></a>
-                      <div class="aa-cartbox-info">
-                        <h4><a href="#">Product Name</a></h4>
-                        <p>1 x $250</p>
-                      </div>
-                      <a class="aa-remove-product" href="#"><span class="fa fa-times"></span></a>
-                    </li>                    
+                    @endforeach             
                     <li>
                       <span class="aa-cartbox-total-title">
-                        Total
+                        Total 
                       </span>
                       <span class="aa-cartbox-total-price">
-                        $500
+                       {{$totalPrice }}
                       </span>
                     </li>
                   </ul>
-                  <a class="aa-cartbox-checkout aa-primary-btn" href="javascript:void(0)">Checkout</a>
+                  <a class="aa-cartbox-checkout aa-primary-btn" href="{{url('/checkout')}}">Checkout</a>
+                  @endif
                 </div>
+               
+                
               </div>
               <!-- / cart box -->
               <!-- search box -->

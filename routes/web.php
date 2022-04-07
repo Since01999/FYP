@@ -31,6 +31,10 @@ Route::get('product/{id}',[FrontController::class,'product'])->name('front.produ
 //add to cart route 
 Route::post('add_to_cart',[FrontController::class,'add_to_cart'])->name('front.add_to_cart');
 
+//route for the cart page
+Route::get('cart',[FrontController::class,'cart'])->name('front.cart');
+
+
 //loading the admin routes 
 Route::get('admin',[AdminController::class,'index'])->name('admin.index');
 Route::post('admin/auth',[AdminController::class,'auth'])->name('admin.auth');
