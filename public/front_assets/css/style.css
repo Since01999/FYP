@@ -2031,7 +2031,7 @@ img {
 }
 #aa-product-category .aa-product-catg-content .aa-product-catg-body .aa-product-catg li {
   margin: 0 0 20px 30px;
-  width: 29.916%;
+  width: 29%;
 }
 #aa-product-category .aa-product-catg-content .aa-product-catg-body .aa-product-catg li .aa-product-descrip {
   display: none;
@@ -4193,7 +4193,15 @@ img {
 .aa-color-red{
   background-color: red;
 }
+.aa-color-grey{
+  background-color: rgba(64, 64, 66, 0.116);
+}
 .mt10{
   margin-top: 10px;
 }
-
+.active_color{
+  border: 3px solid rgb(0, 195, 255);
+}
+.left_cat_active{
+  color: #ff6666;
+}

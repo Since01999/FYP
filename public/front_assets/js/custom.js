@@ -240,23 +240,30 @@ jQuery(function ($) {
     jQuery(function () {
         if ($('body').is('.productPage')) {
             var skipSlider = document.getElementById('skipstep');
+            var filter_price_start = jQuery('#filter_price_start').val();
+            var filter_price_end = jQuery('#filter_price_end').val();
+
+            if(filter_price_end == " " || filter_price_end == " "){
+                filter_price_start = 0
+                filter_price_end = 10000
+            }
             noUiSlider.create(skipSlider, {
                 range: {
                     'min': 0,
-                    '10%': 10,
-                    '20%': 20,
-                    '30%': 30,
-                    '40%': 40,
-                    '50%': 50,
-                    '60%': 60,
-                    '70%': 70,
-                    '80%': 80,
-                    '90%': 90,
-                    'max': 100
+                    '10%': 1000,
+                    '20%': 2000,
+                    '30%': 3000,
+                    '40%': 4000,
+                    '50%': 5000,
+                    '60%': 6000,
+                    '70%': 7000,
+                    '80%': 8000,
+                    '90%': 9000,
+                    'max': 10000
                 },
                 snap: true,
                 connect: true,
-                start: [20, 70]
+                start: [filter_price_start, filter_price_end]
             });
             // for value print
             var skipValues = [
@@ -454,3 +461,32 @@ function deleteCartProduct(pid, size, color, attr_id) {
     jQuery("#cart_box" + attr_id).remove();
 
 }
+
+    function sort_by(){
+    var sort_by_value = jQuery('#sort_by_value').val();
+    jQuery('#sort').val(sort_by_value);
+    jQuery('#categoryFilter').submit();
+    //now your value of sort by will be in the url of the categorypage
+ }
+
+ function sort_price_filter() {
+     var start = jQuery('#skip-value-lower').html();
+     var end = jQuery('#skip-value-upper').html();
+
+     //now adding the data of these tags in the hidden input tags for  the price filtering
+     jQuery('#filter_price_start').val(start);
+     jQuery('#filter_price_end').val(end);
+     jQuery('#categoryFilter').submit();
+   }
+
+   function setColor(color , type){
+       var color_str = jQuery('#color_filter').val(); 
+       if(type == 1){
+           //here we are replacing the color_str with the blank in order to unselect a particular color. 
+        var new_color_str = color_str.replace(color+':',"");
+        jQuery('#color_filter').val(new_color_str);
+       }else{
+        jQuery('#color_filter').val(color +':'+color_str);
+       }
+    jQuery('#categoryFilter').submit();
+   }

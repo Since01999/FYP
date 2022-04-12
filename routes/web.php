@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Route;
 //loading the main view of the store 
 // *************FrontEnd Views **************
 Route::get('/',[FrontController::class,'index'])->name('index');
+Route::get('category/{id}',[FrontController::class,'category'])->name('front.category');
 Route::get('product/{id}',[FrontController::class,'product'])->name('front.product');
 //add to cart route 
 Route::post('add_to_cart',[FrontController::class,'add_to_cart'])->name('front.add_to_cart');
