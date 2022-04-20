@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
-
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redis;
 
 class FrontController extends Controller
@@ -300,10 +302,9 @@ class FrontController extends Controller
     // this is for the color 
     if ($request->get('color_filter') !== null) {
       $color_filter =  $request->get('color_filter');
-      $colorFilterArr = explode(":",$color_filter); // this will convert the str into array on the basis of " : ".
-      $colorFilterArr = array_filter($colorFilterArr);//this will remove empty elements
+      $colorFilterArr = explode(":", $color_filter); // this will convert the str into array on the basis of " : ".
+      $colorFilterArr = array_filter($colorFilterArr); //this will remove empty elements
       $query = $query->where(['products_attr.color_id' => $request->get('color_filter')]);
-      
     }
 
     if ($sort == 'price_asc') {
@@ -328,8 +329,8 @@ class FrontController extends Controller
       ->where(['status' => 1])
       ->get();
 
-      //for fetching all the categories to show in the side bar 
-      $result['category_left'] = DB::table('categories')
+    //for fetching all the categories to show in the side bar 
+    $result['category_left'] = DB::table('categories')
       ->where(['status' => 1])
       ->get();
 
@@ -342,5 +343,142 @@ class FrontController extends Controller
     $result['colorFilterArr'] = $colorFilterArr;
 
     return view('front.category', $result);
+  }
+
+  //function for searching the products
+  public function search(Request $request, $str)
+  {
+    $query = DB::table('products');
+    $query = $query->distinct()->select('products.*');
+    $query = $query->leftJoin('categories', 'categories.id', '=', 'products.category_id'); //error is here 
+    $query = $query->where(['products.status' => 1]);
+    $query = $query->where('name', 'like', "%$str%");
+    $query = $query->orwhere('model', 'like', "%$str%");
+    $query = $query->orwhere('short_desc', 'like', "%$str%");
+    $query = $query->orwhere('desc', 'like', "%$str%");
+    $query = $query->orwhere('technical_specification', 'like', "%$str%");
+    $query = $query->orwhere('keywords', 'like', "%$str%");
+    $query = $query->get();
+    $result['product'] = $query;
+
+    foreach ($result['product'] as $list1) {
+      $query  = DB::table('products_attr');
+      $query = $query->leftJoin('sizes', 'sizes.id', '=', 'products_attr.size_id');
+      $query = $query->leftJoin('colors', 'colors.id', '=', 'products_attr.color_id');
+      $query = $query->where('products_attr.products_id', '=', $list1->id);
+      $query = $query->get();
+      $result['product_attr'][$list1->id] = $query;
+    }
+    return view('front.search', $result);
+  }
+  public function registration(Request $request)
+  {
+
+    if($request->session()->has('FRONT_USER_LOGIN') != null){
+      return redirect('/');
+    }
+    $result = [];
+    return view('front.registration', $result);
+  }
+  //function for the registration process
+  public function registration_process(Request $request)
+  {
+    $valid = Validator::make($request->all(), [
+      "name" => 'required',
+      "email" => 'required|email|unique :customers,email', //here we are making the email unique from the customers table
+      "password" => 'required',
+      "mobile" => 'required|numeric|digits:11'
+    ]);
+
+    if (!$valid->passes()) {
+      return response()->json(['status' => 'error', 'error' => $valid->errors()->toArray()]);
+    } else {
+       $rand_id = rand(111111111,999999999);
+      $arr = [
+        "name"      => $request->name,
+        "email"     => $request->email,
+        "password"  => Crypt::encrypt($request->password),
+        "mobile"    => $request->mobile,
+        "status"    => 1,
+        "is_verify" => 0,
+        "rand_id" => $rand_id,    //this will be unique number for verifiying the user
+        "created_at" => date('Y-m-d h:i:s'),
+        "updated_at" => date('Y-m-d h:i:s')
+      ];
+      $query = DB::table('customers')->insert($arr);
+      if ($query) {
+        //code for sending the email to the customer
+
+
+        $data =['name'=>$request->name,'rand_id'=>$rand_id];
+        $user['to'] =$request->email;
+        Mail::send('front.email_verification', $data, function($messages) use ($user){
+            $messages->to($user['to']);
+            $messages->subject("Email ID Verification");
+        });
+        
+        return response()->json(['status' => 'success', 'msg' => "Registration successfull! Please Check your Email ID for Verification"]);
+      }
+    }
+  }
+  //funtion for the Login Process
+
+  public function login_process(Request $request)
+  {
+
+    $result = DB::table('customers')
+    ->where(['email'=>$request->str_login_email])
+    ->get();
+    if(isset($result[0])){
+      $db_pwd = Crypt::decrypt($result[0]->password);  
+      $status = $result[0]->status;
+      $is_verify = $result[0]->is_verify;
+      if($is_verify == 0){
+        return response()->json(['status'=>"error",'msg'=>"Please Verify Your Email!"]);
+      }
+      if($status == 0){
+        return response()->json(['status'=>"error",'msg'=>"Your Account has Been Deactivated!"]);        
+      }
+      if($db_pwd == $request->str_login_password){
+
+        //here making the cookie if the remember me option is selected 
+        if($request->rememberme === null){
+          //now if user donot click on the remember me ..then we can delete the cookie by some past time putting in the cookie 
+          setcookie('login_email',$request->str_login_email,100);  //100 is specifying the past time  
+          setcookie('login_pwd',$request->str_login_password,100);
+
+        }else{
+          setcookie('login_email',$request->str_login_email,time()+60*60);
+          setcookie('login_pwd',$request->str_login_password,time()+60*60);
+        }
+        $request->session()->put('FRONT_USER_LOGIN',true);
+        $request->session()->put('FRONT_USER_ID',$result[0]->id);
+        $request->session()->put('FRONT_USER_NAME',$result[0]->name);
+        $status = "success";
+        $msg = "";
+      }else{
+        $status = "error";
+        $msg = "Please Enter Valid Password";
+      }
+    }else{
+      $status = "error";
+        $msg = "Please Enter Valid Email Id";
+    }
+    return response()->json(['status'=>$status,'msg'=>$msg]);
+    
+  }
+  function email_verification(Request $request,$rand_id){
+
+    $result = DB::table('customers')
+    ->where(['rand_id' =>$rand_id])
+    ->get();
+    if(isset($result[0])){
+      $result = DB::table('customers')
+      ->where(['id' =>$result[0]->id])
+      ->update(['is_verify' => 1 , 'rand_id' => '']);
+      return view('front.verification');
+    }else{
+      return redirect('/');
+    }
   }
 }

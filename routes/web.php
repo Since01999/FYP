@@ -31,6 +31,25 @@ Route::get('category/{id}',[FrontController::class,'category'])->name('front.cat
 Route::get('product/{id}',[FrontController::class,'product'])->name('front.product');
 //add to cart route 
 Route::post('add_to_cart',[FrontController::class,'add_to_cart'])->name('front.add_to_cart');
+//route for the search bar 
+Route::get('search/{str}',[FrontController::class,'search'])->name('front.search');
+//route for registration page of the user 
+Route::get('registration',[FrontController::class,'registration'])->name('front.registration');
+//route for registring the user  (posting the data to the frontcontroller from ajax in custom.js)
+Route::post('registration_process',[FrontController::class,'registration_process'])->name('registration.registration_process');
+//route for the email verification of the user 
+Route::get('/verification/{id}',[FrontController::class,'email_verification']);
+// route for the Post request of the Logging in the user 
+Route::post('login_process',[FrontController::class,'login_process'])->name('login.login_process');
+//route for Logging Out The User
+Route::get('logout',function(){
+    session()->forget('FRONT_USER_LOGIN'); 
+    session()->forget('FRONT_USER_ID'); 
+    session()->forget('FRONT_USER_NAME'); 
+    session()->flash('error',"Logout Successfully");
+    return redirect('/');  
+});
+
 
 //route for the cart page
 Route::get('cart',[FrontController::class,'cart'])->name('front.cart');

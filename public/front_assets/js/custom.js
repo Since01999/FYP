@@ -490,3 +490,57 @@ function deleteCartProduct(pid, size, color, attr_id) {
        }
     jQuery('#categoryFilter').submit();
    }
+
+   function funSearch(){
+     var search_str = jQuery('#search_str1').val();
+     if(search_str != '' && search_str.length > 3){
+           window.location.href ='/search/'+search_str;
+       }
+
+    }
+
+    //Registration of the User Using Ajax
+jQuery('#frmRegistration').submit(function(e){ 
+    e.preventDefault();
+    jQuery('.field_error').html('');
+    jQuery.ajax({
+        url  : 'registration_process',
+        data : jQuery('#frmRegistration').serialize(),
+        type : 'Post',
+        success : function(result){ 
+            if(result.status == "error"){
+                jQuery.each(result.error,function (key,val) {
+                        //here key returns the index of the message
+                        jQuery('#'+key+'_error').html(val[0]);
+                  });
+            }   
+            if(result.status == "success"){
+                jQuery('#frmRegistration')[0].reset();
+                jQuery('#thank_you_msg').html(result.msg);
+            }           
+        }
+    });
+ });
+   
+
+
+ //Login Using Ajax at the home Page
+
+ jQuery('#frmLogin').submit(function(e){ 
+    e.preventDefault();
+    jQuery('#login_msg').html("");
+    jQuery.ajax({
+        url  : '/login_process',  //this is a route 
+        data : jQuery('#frmLogin').serialize(),  //this is getting all the data from the user
+        type : 'Post',  //this is the request type
+        success : function(result){ 
+            if(result.status=="error"){
+                jQuery('#login_msg').html(result.msg);
+            }   
+            if(result.status =="success"){
+                window.location.href = '/';   // this will redirect to the index page
+            }           
+        }
+    });
+ });
+   

@@ -112,7 +112,13 @@
                   <li class="hidden-xs"><a href="javascript:void(0)">Wishlist</a></li>
                   <li class="hidden-xs"><a href="{{url('/cart')}}">My Cart</a></li>
                   <li class="hidden-xs"><a href="javascript:void(0)">Checkout</a></li>
-                  <li><a href="" data-toggle="modal" data-target="#login-modal">Login</a></li>
+
+                    @if(session()->has('FRONT_USER_LOGIN') != null)
+                    <li><a href="{{url('/logout')}}">Logout</a></li>
+                    @else 
+                    <li><a href="" data-toggle="modal" data-target="#login-modal">Login</a></li>
+                    @endif
+                  
                 </ul>
               </div>
             </div>
@@ -191,8 +197,8 @@
               <!-- search box -->
               <div class="aa-search-box">
                 <form action="">
-                  <input type="text" name="" id="" placeholder="Search here ex. 'man' ">
-                  <button type="submit"><span class="fa fa-search"></span></button>
+                  <input type="text"  id="search_str1" placeholder="Search here ex. 'man' ">
+                  <button type="button" onclick="funSearch()"><span class="fa fa-search"></span></button>
                 </form>
               </div>
               <!-- / search box -->             
@@ -323,6 +329,17 @@
     </div>
   </footer>
   <!-- / footer -->
+  <?php 
+  if(isset($_COOKIE['login_email'])  && isset($_COOKIE['login_pwd'])){
+    $login_email = $_COOKIE['login_email'];
+    $login_pwd = $_COOKIE['login_pwd'];
+    $is_remember = "checked = 'checked'";
+  }else{
+    $login_email = "";
+    $login_pwd =  "";
+    $is_remember = "";
+  }
+  ?>
 
   <!-- Login Modal -->  
   <div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -331,17 +348,22 @@
         <div class="modal-body">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
           <h4>Login or Register</h4>
-          <form class="aa-login-form" action="">
+          {{-- here this form will be work with the help of Ajax --}}
+          <form class="aa-login-form" id="frmLogin">
             <label for="">Username or Email address<span>*</span></label>
-            <input type="text" placeholder="Username or email">
+            <input type="email" placeholder="Email" name="str_login_email" value="{{$login_email}}" required>
             <label for="">Password<span>*</span></label>
-            <input type="password" placeholder="Password">
-            <button class="aa-browse-btn" type="submit">Login</button>
-            <label for="rememberme" class="rememberme"><input type="checkbox" id="rememberme"> Remember me </label>
+            <input type="password" placeholder="Password" name="str_login_password" value="{{$login_pwd}}" required>
+            <button class="aa-browse-btn" type="submit" id="btnLogin">Login</button>
+            <label for="rememberme" class="rememberme"><input type="checkbox" id="rememberme" name="rememberme" {{$is_remember}}> Remember me </label>
+            {{--Btn for Login Error  --}}
+            <div style="clear:both"; id="login_msg"></div>
             <p class="aa-lost-password"><a href="#">Lost your password?</a></p>
             <div class="aa-register-now">
-              Don't have an account?<a href="javascript:void(0)">Register now!</a>
+              Don't have an account?<a href="{{url('registration')}}">Register now!</a>
             </div>
+            @csrf
+            
           </form>
         </div>                        
       </div><!-- /.modal-content -->
