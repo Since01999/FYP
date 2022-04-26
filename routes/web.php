@@ -41,11 +41,32 @@ Route::post('registration_process',[FrontController::class,'registration_process
 Route::get('/verification/{id}',[FrontController::class,'email_verification']);
 // route for the Post request of the Logging in the user 
 Route::post('login_process',[FrontController::class,'login_process'])->name('login.login_process');
+//route for the user forgot passwordv
+Route::post('forgot_password',[FrontController::class,'forgot_password'])->name('forgot.forgot_password');
+//link for changing the password that is sent in the mail 
+Route::get('forgot_password_change/{id}',[FrontController::class,'forgot_password_change'])->name('forgot.forgot_password_change');
+ //Route when customer sets his/her new Password
+ Route::post('/forgot_password_change_process',[FrontController::class,'forgot_password_change_process'])->name('forgot.forgot_password_change_process');
+//Route for the checkout page
+Route::get('/checkout',[FrontController::class,'checkout'])->name('front.checkout');
+//route for the coupon code 
+Route::post('/apply_coupon_code',[FrontController::class,'apply_coupon_code'])->name('front.apply_coupon_code');
+//Route for removing the coupon code 
+Route::post('/remove_coupon_code',[FrontController::class,'remove_coupon_code'])->name('front.remove_coupon_code');
+Route::post('/place_order',[FrontController::class,'place_order'])->name('front.place_order');
+//route when the order is placed
+Route::get('/order_placed',[FrontController::class,'order_placed'])->name('front.checkout');
+//Route For the Payment Gateways 
+
+// *******************************INSTAMOJO PAYMENT*****************************************
+Route::get('/instamojo_payment_redirect ',[FrontController::class,'instamojo_payment_redirect'])->name('Gateway.instamojo_payment_redirect');
+
 //route for Logging Out The User
 Route::get('logout',function(){
     session()->forget('FRONT_USER_LOGIN'); 
     session()->forget('FRONT_USER_ID'); 
     session()->forget('FRONT_USER_NAME'); 
+    session()->forget('USER_TEMP_ID'); 
     session()->flash('error',"Logout Successfully");
     return redirect('/');  
 });

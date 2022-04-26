@@ -4216,3 +4216,32 @@ img {
   color: red;
   clear: both;
 }
+#forgot_msg{
+  color: red;
+  clear: both;
+}
+
+
+.coupon_code input {
+  border: 1px solid #ccc;
+  height: 40px;
+  padding: 10px;
+  margin-bottom : 10px;
+  width: 100%;
+}
+.cart_color{
+  font-size: 14px;
+  color: green;
+  font-weight: bold;
+}
+#coupon_code_msg{
+  color: red;
+}
+.remove_coupon_code_link{
+  color: red;
+  font-size: 14px;
+}
+#order_place_msg{
+  color: red;
+  font-size: 18px;
+}

@@ -143,7 +143,7 @@ class FrontController extends Controller
   public function add_to_cart(Request $request)
   {
     if ($request->session()->has('FRONT_USER_LOGIN')) {
-      $uid = $request->session()->get('FRONT_USER_LOGIN');
+      $uid = $request->session()->get('FRONT_USER_ID');
       $user_type = 'Reg';
     } else {
       $uid = getUserTempId(); //this is a helper function for random user id in common file..
@@ -229,7 +229,7 @@ class FrontController extends Controller
   {
 
     if ($request->session()->has('FRONT_USER_LOGIN')) {
-      $uid = $request->session()->get('FRONT_USER_LOGIN');
+      $uid = $request->session()->get('FRONT_USER_ID');
       $user_type = 'Reg';
     } else {
       $uid = getUserTempId(); //this is a helper function for random user id in common file..
@@ -374,7 +374,7 @@ class FrontController extends Controller
   public function registration(Request $request)
   {
 
-    if($request->session()->has('FRONT_USER_LOGIN') != null){
+    if ($request->session()->has('FRONT_USER_LOGIN') != null) {
       return redirect('/');
     }
     $result = [];
@@ -393,7 +393,7 @@ class FrontController extends Controller
     if (!$valid->passes()) {
       return response()->json(['status' => 'error', 'error' => $valid->errors()->toArray()]);
     } else {
-       $rand_id = rand(111111111,999999999);
+      $rand_id = rand(111111111, 999999999);
       $arr = [
         "name"      => $request->name,
         "email"     => $request->email,
@@ -410,13 +410,13 @@ class FrontController extends Controller
         //code for sending the email to the customer
 
 
-        $data =['name'=>$request->name,'rand_id'=>$rand_id];
-        $user['to'] =$request->email;
-        Mail::send('front.email_verification', $data, function($messages) use ($user){
-            $messages->to($user['to']);
-            $messages->subject("Email ID Verification");
+        $data = ['name' => $request->name, 'rand_id' => $rand_id];
+        $user['to'] = $request->email;
+        Mail::send('front.email_verification', $data, function ($messages) use ($user) {
+          $messages->to($user['to']);
+          $messages->subject("Email ID Verification");
         });
-        
+
         return response()->json(['status' => 'success', 'msg' => "Registration successfull! Please Check your Email ID for Verification"]);
       }
     }
@@ -427,58 +427,297 @@ class FrontController extends Controller
   {
 
     $result = DB::table('customers')
-    ->where(['email'=>$request->str_login_email])
-    ->get();
-    if(isset($result[0])){
-      $db_pwd = Crypt::decrypt($result[0]->password);  
+      ->where(['email' => $request->str_login_email])
+      ->get();
+    if (isset($result[0])) {
+      $db_pwd = Crypt::decrypt($result[0]->password);
       $status = $result[0]->status;
       $is_verify = $result[0]->is_verify;
-      if($is_verify == 0){
-        return response()->json(['status'=>"error",'msg'=>"Please Verify Your Email!"]);
+      if ($is_verify == 0) {
+        return response()->json(['status' => "error", 'msg' => "Please Verify Your Email!"]);
       }
-      if($status == 0){
-        return response()->json(['status'=>"error",'msg'=>"Your Account has Been Deactivated!"]);        
+      if ($status == 0) {
+        return response()->json(['status' => "error", 'msg' => "Your Account has Been Deactivated!"]);
       }
-      if($db_pwd == $request->str_login_password){
+      if ($db_pwd == $request->str_login_password) {
 
         //here making the cookie if the remember me option is selected 
-        if($request->rememberme === null){
+        if ($request->rememberme === null) {
           //now if user donot click on the remember me ..then we can delete the cookie by some past time putting in the cookie 
-          setcookie('login_email',$request->str_login_email,100);  //100 is specifying the past time  
-          setcookie('login_pwd',$request->str_login_password,100);
-
-        }else{
-          setcookie('login_email',$request->str_login_email,time()+60*60);
-          setcookie('login_pwd',$request->str_login_password,time()+60*60);
+          setcookie('login_email', $request->str_login_email, 100);  //100 is specifying the past time  
+          setcookie('login_pwd', $request->str_login_password, 100);
+        } else {
+          setcookie('login_email', $request->str_login_email, time() + 60 * 60);
+          setcookie('login_pwd', $request->str_login_password, time() + 60 * 60);
         }
-        $request->session()->put('FRONT_USER_LOGIN',true);
-        $request->session()->put('FRONT_USER_ID',$result[0]->id);
-        $request->session()->put('FRONT_USER_NAME',$result[0]->name);
+        $request->session()->put('FRONT_USER_LOGIN', true);
+        $request->session()->put('FRONT_USER_ID', $result[0]->id);
+        $request->session()->put('FRONT_USER_NAME', $result[0]->name);
         $status = "success";
         $msg = "";
-      }else{
+
+        //if user had added some items in the cart and he is not registered but after adding 2 to 3 products , he registered himself then we should change the cart table column from not-Reg to Reg .... so for that 
+
+        $getTempUserID = getUserTempId();
+        DB::table('cart')
+          ->where(['user_id' => $getTempUserID, 'user_type' => 'Not-Reg'])
+          ->update(['user_id' => $result[0]->id, 'user_type' => 'Reg']);
+      } else {
         $status = "error";
         $msg = "Please Enter Valid Password";
       }
-    }else{
+    } else {
       $status = "error";
-        $msg = "Please Enter Valid Email Id";
+      $msg = "Please Enter Valid Email Id";
     }
-    return response()->json(['status'=>$status,'msg'=>$msg]);
-    
+    return response()->json(['status' => $status, 'msg' => $msg]);
   }
-  function email_verification(Request $request,$rand_id){
+  function email_verification(Request $request, $rand_id)
+  {
 
     $result = DB::table('customers')
-    ->where(['rand_id' =>$rand_id])
-    ->get();
-    if(isset($result[0])){
+      ->where(['rand_id' => $rand_id])
+      ->where(['is_verify' => 0])
+      ->get();
+    if (isset($result[0])) {
       $result = DB::table('customers')
-      ->where(['id' =>$result[0]->id])
-      ->update(['is_verify' => 1 , 'rand_id' => '']);
+        ->where(['id' => $result[0]->id])
+        ->update(['is_verify' => 1, 'rand_id' => '']);
       return view('front.verification');
-    }else{
+    } else {
       return redirect('/');
     }
   }
+  //function for the forgot password 
+  public function forgot_password(Request $request)
+  {
+    $result = DB::table('customers')
+      ->where(['email' => $request->str_forgot_email])
+      ->get();
+    $rand_id = rand(111111111, 999999999);
+    if (isset($result[0])) {
+      $result = DB::table('customers')
+        ->where(['email' => $request->str_forgot_email])
+        ->update(['is_forgot_password' => 1, 'rand_id' => $rand_id]);
+
+      $data = ['rand_id' => $rand_id];
+      $user['to'] = $request->str_forgot_email;
+      Mail::send('front.forgot_email', $data, function ($messages) use ($user) {
+        $messages->to($user['to']);
+        $messages->subject("Forgot Password");
+      });
+      return response()->json(['status' => "success", 'msg' => "Please Check Your Email Id for Password!"]);
+    } else {
+      return response()->json(['status' => "error", 'msg' => "Email Id not Registered!"]);
+    }
+  }
+  function forgot_password_change(Request $request, $rand_id)
+  {
+
+    $result = DB::table('customers')
+      ->where(['rand_id' => $rand_id])
+      ->where(['is_verify' => 1])
+      ->get();
+    if (isset($result[0])) {
+      $request->session()->put('FORGOT_PASSWORD_USER_ID', $result[0]->id);
+      return view('front.forgot_password_change');
+    } else {
+      return redirect('/');
+    }
+  }
+  //the process when user sets new password
+  function forgot_password_change_process(Request $request)
+  {
+    $result = DB::table('customers')
+      ->where(['id' => $request->session()->get('FORGOT_PASSWORD_USER_ID')])
+      ->update(
+        [
+          'is_forgot_password' => 0,
+          'password' => Crypt::encrypt($request->password),
+          'rand_id' => '',
+        ]
+      );
+    return response()->json(['status' => "success", 'msg' => "Password Changed Successfully!"]);
+  }
+
+  function checkout(Request $request)
+  {
+    //here first we check wheather user add something in the cart or not
+    //caling the function from the common (where all functions are public) 
+    $result['cart_data'] = getAddToCartTotalItem();
+
+    if (isset($result['cart_data'][0])) {
+      if ($request->session()->has('FRONT_USER_LOGIN')) {
+        $uid = $request->session()->get('FRONT_USER_ID');
+        $customer_info = DB::table('customers')
+          ->where(['id' => $uid])
+          ->get();
+        $result['customers']['name'] = $customer_info[0]->name;
+        $result['customers']['email'] = $customer_info[0]->email;
+        $result['customers']['mobile'] = $customer_info[0]->mobile;
+        $result['customers']['address'] = $customer_info[0]->address;
+        $result['customers']['city'] = $customer_info[0]->city;
+        $result['customers']['state'] = $customer_info[0]->state;
+        $result['customers']['zip'] = $customer_info[0]->zip;
+      } else {
+        $result['customers']['name'] = "";
+        $result['customers']['email'] = "";
+        $result['customers']['mobile'] = "";
+        $result['customers']['address'] = "";
+        $result['customers']['city'] = "";
+        $result['customers']['state'] = "";
+        $result['customers']['zip'] = "";
+      }
+      return view('front.checkout', $result);
+    } else {
+      return redirect('/');
+    }
+  }
+  //functionality related to the coupon code 
+  public function apply_coupon_code(Request $request)
+  {
+    $arr = apply_coupon_code($request->coupon_code);
+    $arr = json_decode($arr,true);
+    
+    return response()->json(['status' => $arr['status'], 'msg' => $arr['msg'], 'totalPrice' => $arr['totalPrice'] ]);
+  }
+  //function for removing the coupon code 
+  function remove_coupon_code(Request $request)
+  {
+
+    $totalPrice = 0;
+    $result = DB::table('coupons')
+      ->where(['code' => $request->coupon_code])
+      ->get();
+    $getAddToCartTotalItem = getAddToCartTotalItem();
+    //now getting the total price of all the items in the cart
+
+    foreach ($getAddToCartTotalItem as $list) {
+      $totalPrice = $totalPrice + ($list->qty * $list->price);
+    }
+
+
+    return response()->json(['status' => "success", 'msg' => "Coupon Code Removed", 'totalPrice' => $totalPrice]);
+  }
+  function place_order(Request $request)
+  {
+    $payment_url = '';
+    if ($request->session()->has('FRONT_USER_LOGIN')) {
+        $coupon_value = 0;
+      if($request->coupon_code!=''){
+        $arr = apply_coupon_code($request->coupon_code);
+        $arr = json_decode($arr,true);
+        if($arr['status'] =='success'){
+          $coupon_value =$arr['coupon_code_value'];
+        }else{
+          return response()->json(['status' => 'error','msg' =>$arr['msg']]);
+        }
+      }
+      $uid = $request->session()->get('FRONT_USER_ID');
+      //getting total price of the cart   
+      $totalPrice = 0;
+      $getAddToCartTotalItem = getAddToCartTotalItem();
+      foreach ($getAddToCartTotalItem as $list) {
+        $totalPrice = $totalPrice + ($list->qty * $list->price);
+      }
+      $arr = [
+        'customers_id' => $uid,
+        "name"      => $request->name,
+        "email"     => $request->email,
+        "mobile"    => $request->mobile,
+        "address"    => $request->address,
+        "city"    => $request->city,
+        "state"    => $request->state,
+        'coupon_value' => $coupon_value,
+        //in the database we used pincode instead of zip 
+        "pincode"    => $request->zip,
+        "coupon_code"    => $request->coupon_code,
+        "payment_type"    => $request->payment_type,
+        "payment_status"    => "Pending",
+        'total_amount' => $totalPrice,
+        'order_status'  => 1,
+        "added_on" => date('Y-m-d h:i:s'),
+
+      ];
+      $order_id = DB::table('orders')->insertGetId($arr); //this will insert the data and get that specific id.
+      if ($order_id > 0) {
+        foreach ($getAddToCartTotalItem as $list) {
+          $productDetailArr['product_id'] = $list->pid;
+          $productDetailArr['products_attr_id'] = $list->attr_id;
+          $productDetailArr['price'] = $list->price;
+          $productDetailArr['qty'] = $list->qty;
+          $productDetailArr['orders_id'] = $order_id;
+          DB::table('orders_detail')->insert($productDetailArr);
+        }
+        //integrating instamojo payment gateways 
+       
+        if($request->payment_type == 'Gateway'){
+
+
+            // *******************INSTAMOJO PAYMENT GATEWAY**********************
+          
+            $final_amt = $totalPrice - $coupon_value;
+          
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://test.instamojo.com/api/1.1/payment-requests/');
+            curl_setopt($ch, CURLOPT_HEADER, FALSE);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+            curl_setopt($ch, CURLOPT_HTTPHEADER,
+            array("X-Api-Key:test_cffc88fc38618172a4900f8dc9a",
+                  "X-Auth-Token:test_94f5b0165f980d0f373ac18412a"));
+                  $payload = Array(
+                    'purpose' => 'Buy Product',
+                    'amount' => $final_amt,
+                    'buyer_name' => $request->name,
+                    'email' => $request->email,
+                    'phone' => $request->mobile,
+                    'redirect_url' => 'http://127.0.0.1:8000/instamojo_payment_redirect',
+                    'send_email' => 'True',
+                    'send_sms' => 'True',
+                    'allow_repeated_payments' => 'False',
+                  ); 
+              curl_setopt($ch, CURLOPT_POST, true);
+              curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($payload));
+              $response = curl_exec($ch);
+              curl_close($ch); 
+              $response = json_decode($response);
+              $payment_url =$response->payment_request->longurl;
+                          
+        }
+
+        //here when the order is placed we will empty the cart and proceed to the order page
+        //  DB::table('cart')->where(['user_id' => $uid, 'user_type' => 'Reg'])->delete();
+        //now setting the session for the Thankyou page corresponding to the orders id 
+        $request->session()->put('ORDER_ID', $order_id);
+        $status = "success";
+        $msg = "Order Placed";
+      } else {
+        $status = "error";
+        $msg = "Please Order After Sometime";
+      }
+    } else {
+      //this else is for if the user is not registered
+      $status = "error";
+      $msg = "Please Login To Place Order";
+    }
+    return response()->json(['status' => $status, 'msg' => $msg ,'payment_url' => $payment_url]);
+  }
+
+  //function for confirming the order 
+  function order_placed(Request $request)
+  {
+    if ($request->session()->has('ORDER_ID')) {
+      return view('front.order_placed');
+    } else {
+      return redirect('/');
+    }
+  }
+  function instamojo_payment_redirect(Request $request)
+  {
+    prx($request->all());
+  }
+  
+
+  
 }

@@ -60,7 +60,8 @@
                        <tr>
                          <td colspan="6" class="aa-cart-view-bottom">
                           
-                           <input class="aa-cart-view-btn" type="button" value="CheckOut">
+                          <a class="aa-cartbox-checkout aa-primary-btn" href="{{url('/checkout')}}"><input class="aa-cart-view-btn" type="button" value="CheckOut"></a>
+                           
                          </td>
                        </tr>
                        
@@ -72,22 +73,7 @@
                  @endif
                 </form>
               <!-- Cart Total view -->
-              <div class="cart-view-total">
-                <h4>Cart Totals</h4>
-                <table class="aa-totals-table">
-                  <tbody>
-                    <tr>
-                      <th>Subtotal</th>
-                      <td>$450</td>
-                    </tr>
-                    <tr>
-                      <th>Total</th>
-                      <td>$450</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <a href="#" class="aa-cart-view-btn">Proced to Checkout</a>
-              </div>
+             
             </div>
           </div>
         </div>

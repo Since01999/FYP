@@ -243,7 +243,7 @@ jQuery(function ($) {
             var filter_price_start = jQuery('#filter_price_start').val();
             var filter_price_end = jQuery('#filter_price_end').val();
 
-            if(filter_price_end == " " || filter_price_end == " "){
+            if (filter_price_end == " " || filter_price_end == " ") {
                 filter_price_start = 0
                 filter_price_end = 10000
             }
@@ -421,16 +421,16 @@ function add_to_cart(id, color_str_id, size_str_id) {
                     jQuery('.aa-cart-notify').html('0');
                     jQuery('.aa-cartbox-summary').remove();
                 } else {
-                   
+
                     jQuery('.aa-cart-notify').html(result.totalItem);
                     var html = '<ul>';
                     jQuery.each(result.data, function (arrKey, arrVal) {
-                        totalPrice = parseInt(totalPrice)+(parseInt(arrVal.qty)*parseInt(arrVal.price));
-                        html+='<li><a class="aa-cartbox-img" href="#"><img src="'+PRODUCT_IMAGE+'/'+arrVal.image+'"  alt=""></a><div class="aa-cartbox-info"><h4><a href="#">'+arrVal.name+'</a></h4><p> '+arrVal.qty+'* Rs '+arrVal.price+'</p></div><a class="aa-remove-product" href="#"><span class="fa fa-times"></span></a></li>'        
+                        totalPrice = parseInt(totalPrice) + (parseInt(arrVal.qty) * parseInt(arrVal.price));
+                        html += '<li><a class="aa-cartbox-img" href="#"><img src="' + PRODUCT_IMAGE + '/' + arrVal.image + '"  alt=""></a><div class="aa-cartbox-info"><h4><a href="#">' + arrVal.name + '</a></h4><p> ' + arrVal.qty + '* Rs ' + arrVal.price + '</p></div><a class="aa-remove-product" href="#"><span class="fa fa-times"></span></a></li>'
                     });
                 }
-                html += '<li><span class="aa-cartbox-total-title">Total</span> <span class="aa-cartbox-total-price">'+totalPrice+'</span></li>';
-                html +='</ul><a class="aa-cartbox-checkout aa-primary-btn" href="checkout">Checkout</a>';
+                html += '<li><span class="aa-cartbox-total-title">Total</span> <span class="aa-cartbox-total-price">' + totalPrice + '</span></li>';
+                html += '</ul><a class="aa-cartbox-checkout aa-primary-btn" href="cart">Cart</a>';
                 jQuery('.aa-cartbox-summary').html(html);
             }
         })
@@ -462,85 +462,203 @@ function deleteCartProduct(pid, size, color, attr_id) {
 
 }
 
-    function sort_by(){
+function sort_by() {
     var sort_by_value = jQuery('#sort_by_value').val();
     jQuery('#sort').val(sort_by_value);
     jQuery('#categoryFilter').submit();
     //now your value of sort by will be in the url of the categorypage
- }
+}
 
- function sort_price_filter() {
-     var start = jQuery('#skip-value-lower').html();
-     var end = jQuery('#skip-value-upper').html();
+function sort_price_filter() {
+    var start = jQuery('#skip-value-lower').html();
+    var end = jQuery('#skip-value-upper').html();
 
-     //now adding the data of these tags in the hidden input tags for  the price filtering
-     jQuery('#filter_price_start').val(start);
-     jQuery('#filter_price_end').val(end);
-     jQuery('#categoryFilter').submit();
-   }
-
-   function setColor(color , type){
-       var color_str = jQuery('#color_filter').val(); 
-       if(type == 1){
-           //here we are replacing the color_str with the blank in order to unselect a particular color. 
-        var new_color_str = color_str.replace(color+':',"");
-        jQuery('#color_filter').val(new_color_str);
-       }else{
-        jQuery('#color_filter').val(color +':'+color_str);
-       }
+    //now adding the data of these tags in the hidden input tags for  the price filtering
+    jQuery('#filter_price_start').val(start);
+    jQuery('#filter_price_end').val(end);
     jQuery('#categoryFilter').submit();
-   }
+}
 
-   function funSearch(){
-     var search_str = jQuery('#search_str1').val();
-     if(search_str != '' && search_str.length > 3){
-           window.location.href ='/search/'+search_str;
-       }
+function setColor(color, type) {
+    var color_str = jQuery('#color_filter').val();
+    if (type == 1) {
+        //here we are replacing the color_str with the blank in order to unselect a particular color. 
+        var new_color_str = color_str.replace(color + ':', "");
+        jQuery('#color_filter').val(new_color_str);
+    } else {
+        jQuery('#color_filter').val(color + ':' + color_str);
+    }
+    jQuery('#categoryFilter').submit();
+}
 
+function funSearch() {
+    var search_str = jQuery('#search_str1').val();
+    if (search_str != '' && search_str.length > 3) {
+        window.location.href = '/search/' + search_str;
     }
 
-    //Registration of the User Using Ajax
-jQuery('#frmRegistration').submit(function(e){ 
+}
+
+//Registration of the User Using Ajax
+jQuery('#frmRegistration').submit(function (e) {
     e.preventDefault();
     jQuery('.field_error').html('');
     jQuery.ajax({
-        url  : 'registration_process',
-        data : jQuery('#frmRegistration').serialize(),
-        type : 'Post',
-        success : function(result){ 
-            if(result.status == "error"){
-                jQuery.each(result.error,function (key,val) {
-                        //here key returns the index of the message
-                        jQuery('#'+key+'_error').html(val[0]);
-                  });
-            }   
-            if(result.status == "success"){
+        url: 'registration_process',
+        data: jQuery('#frmRegistration').serialize(),
+        type: 'Post',
+        success: function (result) {
+            if (result.status == "error") {
+                jQuery.each(result.error, function (key, val) {
+                    //here key returns the index of the message
+                    jQuery('#' + key + '_error').html(val[0]);
+                });
+            }
+            if (result.status == "success") {
                 jQuery('#frmRegistration')[0].reset();
                 jQuery('#thank_you_msg').html(result.msg);
-            }           
+            }
         }
     });
- });
-   
+});
 
 
- //Login Using Ajax at the home Page
 
- jQuery('#frmLogin').submit(function(e){ 
+//Login Using Ajax at the home Page
+
+jQuery('#frmLogin').submit(function (e) {
     e.preventDefault();
     jQuery('#login_msg').html("");
     jQuery.ajax({
-        url  : '/login_process',  //this is a route 
-        data : jQuery('#frmLogin').serialize(),  //this is getting all the data from the user
-        type : 'Post',  //this is the request type
-        success : function(result){ 
-            if(result.status=="error"){
+        url: '/login_process', //this is a route 
+        data: jQuery('#frmLogin').serialize(), //this is getting all the data from the user
+        type: 'Post', //this is the request type
+        success: function (result) {
+            if (result.status == "error") {
                 jQuery('#login_msg').html(result.msg);
-            }   
-            if(result.status =="success"){
-                window.location.href = '/';   // this will redirect to the index page
-            }           
+            }
+            if (result.status == "success") {
+                window.location.href = window.location.href; // this will redirect to the index page
+            }
         }
     });
- });
-   
+});
+
+function forgot_password() {
+    jQuery("#popup_forgot").show();
+    jQuery("#popup_login").hide();
+}
+
+function show_login_popup() {
+    jQuery("#popup_forgot").hide();
+    jQuery("#popup_login").show();
+}
+
+
+
+jQuery('#frmForgot').submit(function (e) {
+    e.preventDefault();
+    jQuery('#forgot_msg').html("Please Wait ...");
+    jQuery.ajax({
+        url: '/forgot_password', //this is a route 
+        data: jQuery('#frmForgot').serialize(), //this is getting all the data from the user
+        type: 'Post', //this is the request type
+        success: function (result) {
+            jQuery('#forgot_msg').html(result.msg)
+        }
+    });
+});
+
+
+jQuery('#frmUpdatePassword').submit(function (e) {
+    e.preventDefault();
+    jQuery('#thank_you_msg').html("Please Wait ...");
+    jQuery.ajax({
+        url: '/forgot_password_change_process', //this is a route 
+        data: jQuery('#frmUpdatePassword').serialize(), //this is getting all the data from the user
+        type: 'Post', //this is the request type
+        success: function (result) {
+            jQuery('#thank_you_msg').html(result.msg)
+        }
+    });
+});
+//functionality of coupon code
+
+function applyCouponCode() {
+    jQuery("#coupon_code_msg").html("");
+    jQuery("#order_place_msg").html("");
+    var coupon_code = jQuery("#coupon_code").val();
+    if (coupon_code != '') {
+        jQuery.ajax({
+            type: 'post',
+            url: '/apply_coupon_code',
+            data: "coupon_code=" + coupon_code + "&_token=" + jQuery("[name ='_token']").val(),
+            success: function (result) {
+
+                if (result.status == "success") {
+                    jQuery('.show_coupon_box').removeClass('hide');
+                    jQuery('#coupon_code_str').html(coupon_code);
+                    jQuery('#total_Price').html('$ ' + result.totalPrice);
+                    jQuery(".apply_coupon_code_box").hide();
+
+                } else {
+
+                }
+                jQuery("#coupon_code_msg").html(result.msg);
+            }
+        });
+    } else {
+        jQuery("#coupon_code_msg").html("Please Enter Coupon Code");
+    }
+}
+
+function remove_coupon_code() {
+    jQuery("#coupon_code_msg").html("");
+    var coupon_code = jQuery("#coupon_code").val();
+    jQuery("#coupon_code").val('');
+    if (coupon_code != '') {
+        jQuery.ajax({
+            type: 'post',
+            url: '/remove_coupon_code',
+            data: "coupon_code=" + coupon_code + "&_token=" + jQuery("[name ='_token']").val(),
+            success: function (result) {
+
+                if (result.status == "success") {
+                    jQuery('.show_coupon_box').addClass('hide');
+                    jQuery('#coupon_code_str').html('');
+                    jQuery('#total_Price').html('$ ' + result.totalPrice);
+                    jQuery(".apply_coupon_code_box").show();
+
+                } else {
+
+                }
+                jQuery("#coupon_code_msg").html(result.msg);
+            }
+        });
+    }
+}
+
+//function for submiting Place Order form 
+jQuery('#frmPlaceOrder').submit(function (e) {
+    e.preventDefault();
+    jQuery('#order_place_msg').html("Please Wait ...");
+    jQuery.ajax({
+        url: '/place_order', //this is a route 
+        data: jQuery('#frmPlaceOrder').serialize(), //this is getting all the data from the user
+        type: 'Post', //this is the request type
+        success: function (result) {
+            if(result.status == 'success'){
+                if(result.payment_url!= ''){
+                    window.location.href = result.payment_url;
+                }else{
+                    window.location.href = "/order_placed";
+                }
+                
+            }else{
+
+            }
+            jQuery('#order_place_msg').html(result.msg);
+            
+        }
+    });
+});

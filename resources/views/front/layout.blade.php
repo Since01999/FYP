@@ -187,7 +187,7 @@
                       </span>
                     </li>
                   </ul>
-                  <a class="aa-cartbox-checkout aa-primary-btn" href="{{url('/checkout')}}">Checkout</a>
+                  <a class="aa-cartbox-checkout aa-primary-btn" href="{{url('/cart')}}">Cart</a>
                   @endif
                 </div>
                
@@ -347,7 +347,11 @@
       <div class="modal-content">                      
         <div class="modal-body">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4>Login or Register</h4>
+          
+          {{-- popup for login  --}}
+          <div id="popup_login">
+
+            <h4>Login or Register</h4>
           {{-- here this form will be work with the help of Ajax --}}
           <form class="aa-login-form" id="frmLogin">
             <label for="">Username or Email address<span>*</span></label>
@@ -358,13 +362,32 @@
             <label for="rememberme" class="rememberme"><input type="checkbox" id="rememberme" name="rememberme" {{$is_remember}}> Remember me </label>
             {{--Btn for Login Error  --}}
             <div style="clear:both"; id="login_msg"></div>
-            <p class="aa-lost-password"><a href="#">Lost your password?</a></p>
+            <p class="aa-lost-password"><a href="javascript:void(0)" onclick="forgot_password()" style="color: red">Lost your password?</a></p>
             <div class="aa-register-now">
               Don't have an account?<a href="{{url('registration')}}">Register now!</a>
             </div>
             @csrf
-            
           </form>
+          </div>
+
+{{-- popup for forgot Password --}}
+          
+          <div id="popup_forgot" style="display: none">            
+            <h4>Forgot Password</h4>
+          {{-- here this form will be work with the help of Ajax --}}
+          <form class="aa-login-form" id="frmForgot">
+            <label for="">Username or Email address<span>*</span></label>
+            <input type="email" placeholder="Email" name="str_forgot_email" required>
+            <button class="aa-browse-btn" type="submit" id="btnForgot">Submit</button>
+            {{--Btn for Login Error  --}}
+            <div style="clear:both"; id="forgot_msg"></div>
+            <div class="aa-register-now">
+              Login Form?<a href="javascript:void(0)" onclick="show_login_popup()">Login now!</a>
+            </div>
+            @csrf
+          </form>
+
+          </div>
         </div>                        
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->

@@ -1,5 +1,6 @@
 <?php
 
+use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\DB;
 
 //self defined function
@@ -59,20 +60,20 @@ function buildTreeView($arr, $parent, $level = 0, $prelevel = -1)
 }
 function getUserTempId()
 {
-    if (session()->has('USER_TEMP_ID') === null) {
-        $rand = rand(111111111, 999999999);
+    if (!session()->has('USER_TEMP_ID')) {
+        $rand = rand(111111111,999999999);
         //we can also use "strrandom" function for getting random id.
-        session()->put('USER_TEMP_ID', $rand);
+        session()->put('USER_TEMP_ID',$rand);
         return $rand;
     } else {
-        return session()->has('USER_TEMP_ID');
+        return session()->get('USER_TEMP_ID');
     }
 }
 
 function getAddToCartTotalItem()
 {
     if(session()->has('FRONT_USER_LOGIN')){
-        $uid =session()->get('FRONT_USER_LOGIN');
+        $uid =session()->get('FRONT_USER_ID');
         $user_type = 'Reg'; 
        }else{
           $uid = getUserTempId(); //this is a helper function for random user id in common file..
@@ -91,3 +92,62 @@ function getAddToCartTotalItem()
       ->get();
          return $result;
 }   
+function apply_coupon_code($coupon_code)
+{
+    $totalPrice=0;
+    $result=DB::table('coupons')  
+        ->where(['code'=>$coupon_code])
+        ->get(); 
+    
+    if(isset($result[0])){
+        $value=$result[0]->value;
+        $type=$result[0]->type;
+        $getAddToCartTotalItem=getAddToCartTotalItem();
+        
+        foreach($getAddToCartTotalItem as $list){
+            $totalPrice=$totalPrice+($list->qty*$list->price);
+        }  
+        if($result[0]->status==1){
+            if($result[0]->is_one_time==1){
+                $status="error";
+                $msg="Coupon code already used";    
+            }else{
+                $min_order_amt=$result[0]->min_order_amt;
+                if($min_order_amt>0){
+                     
+                    if($min_order_amt<$totalPrice){
+                        $status="success";
+                        $msg="Coupon code applied";
+                    }else{
+                        $status="error";
+                        $msg="Cart amount must be greater then $min_order_amt";
+                    }
+                }else{
+                     $status="success";
+                     $msg="Coupon code applied";
+                }
+            }
+        }else{
+            $status="error";
+            $msg="Coupon code deactivated";   
+        }
+        
+    }else{
+       $status="error";
+       $msg="Please enter valid coupon code";
+    }
+    
+    $coupon_code_value = 0;
+    if($status=='success'){
+        if($type=='Value'){
+            $coupon_code_value = $value;
+            $totalPrice=$totalPrice-$value;
+        }if($type=='Per'){
+            $newPrice=($value/100)*$totalPrice;
+            $totalPrice=round($totalPrice-$newPrice);
+            $coupon_code_value = $newPrice;
+        }
+    }
+
+    return json_encode(['status'=>$status,'msg'=>$msg,'totalPrice'=>$totalPrice,'coupon_code_value'=>$coupon_code_value]); 
+}
