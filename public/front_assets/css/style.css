@@ -4245,3 +4245,22 @@ img {
   color: red;
   font-size: 18px;
 }
+
+.order_detail{
+  line-height: 25px;
+  font-style: italic;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+.coupon_apply_txt{
+  color:  red;
+  font-size: 14px;
+}
+.order_id_btn{
+  background-color: #ff6666;
+  padding: 14px;
+}
+
+.order_id_btn a{
+  color: white;
+}
