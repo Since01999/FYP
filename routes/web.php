@@ -11,6 +11,8 @@ use App\Http\Controllers\Admin\SizeController;
 use App\Http\Controllers\Admin\TaxController;
 use App\Http\Controllers\Front\FrontController;
 use App\Http\Controllers\Admin\HomeBannerController;
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\ProductReviewController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -71,6 +73,8 @@ Route::group(['middleware' => 'user_auth'], function () {
     Route::get('/order', [FrontController::class, 'order'])->name('front.order');
     //Route for order Details 
     Route::get('order_detail/{id}', [FrontController::class, 'order_detail'])->name('front.order_detail');
+    //route for the customer review 
+    Route::post('product_review_process',[FrontController::class,'product_review_process'])->name('front.product_review_process');
 }); 
 
 //route for Logging Out The User
@@ -203,4 +207,23 @@ Route::group(['middleware' => 'admin_auth'], function () {
     Route::Post('admin/homebanner/manage_homebanner_process', [HomeBannerController::class, 'manageHomeBannerProcess'])->name('homebanner.manage_homebanner_process');
     Route::get('admin/homebanner/delete/{id}', [HomeBannerController::class, 'deleteHomeBanner'])->name('homebanner.delete');
     Route::get('admin/homebanner/status/{status}/{id}', [HomeBannerController::class, 'statusHomeBanner'])->name('homebanner.status');
+
+    // Order Routes
+    
+    Route::get('admin/order', [OrderController::class, 'index'])->name('admin.order');
+    Route::get('admin/order_detail/{id}', [OrderController::class, 'order_detail'])->name('admin.order_detail');
+    //route for updating the payment status 
+    Route::get('admin/update_payment_status/{payment_status}/{id}', [OrderController::class, 'update_payment_status'])->name('order.update_payment_status');
+    //route for updating the order status 
+    Route::get('admin/update_order_status/{order_status}/{id}', [OrderController::class, 'update_order_status'])->name('order.update_order_status');
+    //route for updating the track details 
+    Route::post('admin/order_detail/{id}', [OrderController::class, 'update_track_details'])->name('admin.update_track_details');
+
+    //Product Review Routes
+
+    Route::get('admin/product_review', [ProductReviewController::class, 'index'])->name('admin.product_review');
+    Route::get('admin/update_product_review_status/{order_status}/{id}', [ProductReviewController::class, 'update_product_review_status'])->name('admin.update_product_review_status');
+    //route for updating the track details 
+
+
 });

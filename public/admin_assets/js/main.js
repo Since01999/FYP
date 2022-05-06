@@ -1650,3 +1650,23 @@
   }
 
 })(jQuery);
+
+function update_payment_status(id){
+  var check = confirm('Are you Sure ?');
+  
+  var payment_status = jQuery('#payment_status').val();
+  if(check==true){
+    window.location.href ='/admin/update_payment_status/'+payment_status+'/'+id;
+  }
+
+}
+
+function update_order_status(id){
+  var check = confirm('Are you Sure ?');
+  
+  var order_status = jQuery('#order_status').val();
+  if(check==true){
+    window.location.href ='/admin/update_order_status/'+order_status+'/'+id;
+  }
+
+}

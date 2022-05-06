@@ -33,6 +33,7 @@
             Order Status :  {{$order_details[0]->orders_status}} <br>
             Payment Status :  {{$order_details[0]->payment_status}} <br>
             Payment Type :  {{$order_details[0]->payment_type}} <br>
+            Track Details :  {{$order_details[0]->track_details}} <br>
             <?php if($order_details[0]->payment_id != '') 
            echo 'Payment ID :'.$order_details[0]->payment_id.'<br>'
             ?>

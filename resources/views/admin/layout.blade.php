@@ -52,6 +52,15 @@
                                     <i class="fas fa-tachometer-alt"></i>Dashboard</a>
     
                             </li>
+                            <li class="@yield('order_selected')">
+                                <a href="{{url('admin/order')}}">
+                                    <i class="fas fa-shopping-basket"></i>Order</a>
+                            </li>
+                            
+                        <li class="@yield('product_review_selected')">
+                            <a href="{{url('admin/product_review')}}">
+                                <i class="fas fa-shopping-basket"></i>Product Review</a>
+                        </li>
                             <li class="@yield('category_selected')">
                                 <a href="{{url('admin/category')}}">
                                     <i class="fas fa-list"></i>Categories</a>
@@ -113,6 +122,15 @@
                             <a href="{{url('admin/dashboard')}}">
                                 <i class="fas fa-tachometer-alt"></i>Dashboard</a>
 
+                        </li>
+                        <li class="@yield('order_selected')">
+                            <a href="{{url('admin/order')}}">
+                                <i class="fas fa-shopping-basket"></i>Order</a>
+                        </li>
+
+                        <li class="@yield('product_review_selected')">
+                            <a href="{{url('admin/product_review')}}">
+                                <i class="fas fa-shopping-basket"></i>Product Review</a>
                         </li>
                         <li class="@yield('category_selected')">
                             <a href="{{url('admin/category')}}">

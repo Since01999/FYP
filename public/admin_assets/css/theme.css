@@ -14655,3 +14655,23 @@ section {
     margin-top: 10px;
 }
 
+.order_detail_txt{
+    background-color: #ff6666;
+    padding: 14px;
+}
+.order_detail img{
+    width: 100px;
+}
+.whitebg{
+    background-color: white;
+    padding : 30px;
+}
+
+.order_operation{
+    background-color: white;
+    padding : 30px;
+    margin-top: 30px;
+}
+.main_select_div{
+    padding:20px;
+}

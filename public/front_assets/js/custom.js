@@ -415,25 +415,34 @@ function add_to_cart(id, color_str_id, size_str_id) {
             data: jQuery('#frmAddToCart').serialize(),
             type: 'post',
             success: function (result) {
-                var totalPrice = 0;
-                alert('Product ' + result.msg);
-                if (result.totalItem == 0) {
-                    jQuery('.aa-cart-notify').html('0');
-                    jQuery('.aa-cartbox-summary').remove();
-                } else {
 
-                    jQuery('.aa-cart-notify').html(result.totalItem);
-                    var html = '<ul>';
-                    jQuery.each(result.data, function (arrKey, arrVal) {
-                        totalPrice = parseInt(totalPrice) + (parseInt(arrVal.qty) * parseInt(arrVal.price));
-                        html += '<li><a class="aa-cartbox-img" href="#"><img src="' + PRODUCT_IMAGE + '/' + arrVal.image + '"  alt=""></a><div class="aa-cartbox-info"><h4><a href="#">' + arrVal.name + '</a></h4><p> ' + arrVal.qty + '* Rs ' + arrVal.price + '</p></div><a class="aa-remove-product" href="#"><span class="fa fa-times"></span></a></li>'
-                    });
+                var totalPrice = 0;
+
+                //condition if the available quantitity is overflowed
+                if(result.msg == 'not_available')
+                {
+                    alert(result.data);    
+                }else{
+                    alert("Product  " + result.msg); 
+                    if (result.totalItem == 0) {
+                        jQuery('.aa-cart-notify').html('0');
+                        jQuery('.aa-cartbox-summary').remove();
+                    } else {
+    
+                        jQuery('.aa-cart-notify').html(result.totalItem);
+                        var html = '<ul>';
+                        jQuery.each(result.data, function (arrKey, arrVal) {
+                            totalPrice = parseInt(totalPrice) + (parseInt(arrVal.qty) * parseInt(arrVal.price));
+                            html += '<li><a class="aa-cartbox-img" href="#"><img src="' + PRODUCT_IMAGE + '/' + arrVal.image + '"  alt=""></a><div class="aa-cartbox-info"><h4><a href="#">' + arrVal.name + '</a></h4><p> ' + arrVal.qty + '* Rs ' + arrVal.price + '</p></div><a class="aa-remove-product" href="#"><span class="fa fa-times"></span></a></li>'
+                        });
+                    }
+                    html += '<li><span class="aa-cartbox-total-title">Total</span> <span class="aa-cartbox-total-price">' + totalPrice + '</span></li>';
+                    html += '</ul><a class="aa-cartbox-checkout aa-primary-btn" href="cart">Cart</a>';
+                    jQuery('.aa-cartbox-summary').html(html);
+
                 }
-                html += '<li><span class="aa-cartbox-total-title">Total</span> <span class="aa-cartbox-total-price">' + totalPrice + '</span></li>';
-                html += '</ul><a class="aa-cartbox-checkout aa-primary-btn" href="cart">Cart</a>';
-                jQuery('.aa-cartbox-summary').html(html);
             }
-        })
+        });
     }
 }
 
@@ -659,6 +668,35 @@ jQuery('#frmPlaceOrder').submit(function (e) {
             }
             jQuery('#order_place_msg').html(result.msg);
             
+        }
+    });
+});
+
+  //Product Review 
+jQuery('#frmProductReview').submit(function (e) {
+    e.preventDefault();
+    // jQuery('#login_msg').html("");   
+    
+    jQuery.ajax({
+        url: '/product_review_process', //this is a route 
+        data: jQuery('#frmProductReview').serialize(), //this is getting all the data from the user
+        type: 'Post', //this is the request type
+        success: function (result) {
+            if(result.status == "success"){
+                jQuery('.review_error').html(result.msg);
+                jQuery('#frmProductReview')[0].reset();
+                setInterval(function(){
+                    window.location.href = window.location.href;
+                },3000);
+                
+            }
+            if(result.status == "error"){
+                jQuery('.review_error').html(result.msg);
+            }
+
+           
+            
+           
         }
     });
 });
